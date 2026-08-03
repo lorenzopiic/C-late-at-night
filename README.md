@@ -1,0 +1,1 @@
+A study repository to collect all the programs that address the fundamental areas I'm gradually studying as I delve deeper into computer science. Everything will be implemented in C for now. Many of the implementations will be taken from books or other programmers, but I'll certainly try to make as many personal modifications as possible.
