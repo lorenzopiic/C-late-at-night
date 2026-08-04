@@ -4,6 +4,7 @@
 
 #include<stdio.h>
 #include<string.h>
+#include<ctype.h>
 #include<stdlib.h>
 #include<limits.h>
 #include<errno.h>
@@ -70,7 +71,7 @@ void main_loop_instructions(void) {
 
 void push_options(void){
 	printf("What kind of data do you want to push?\n\n");
-	printf("1 >>> short\n2 >>> char\n3 >>> int\n4 >>> double\n5 >>> string\n");
+	printf("1 >>> char\n2 >>> short\n3 >>> int\n4 >>> double\n5 >>> string\n");
 }
 void print_divider(void){
 	fprintf(stdout,"\n\n/* =========================================== */\n\n"); 	
@@ -117,36 +118,47 @@ bool check_push_options_choice(int* choice){
 type_t* manage_push_options_choice(int* option){
 		type_t* ret = NULL; 
 		switch(*option){
-			case 1:
+			case 1: { 
+ 		 	  printf("\n");
+    		  char ch;
+    		  char buffer[128];
+
+    			while (1) {
+        			fprintf(stdout, "Enter the char >>> ");
+        			if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
+            		continue;
+        		}
+				/* fgets stores the \n, this means that a single valid char produces
+				  a sequence like "a\n\0" (length 2)  */
+					if (strlen(buffer) == 2 && buffer[0] != '\n') {
+            
+           		 if (isdigit((unsigned char)buffer[0])) {
+                	fprintf(stderr, "\nError >>> Enter just a char, no digits...\n");
+                	continue;
+            	}	
+            	ch = buffer[0];
+           		 break; // clean input // 
+            
+        		} else {
+            	fprintf(stderr, "\nError >>> Enter just one char at a time...\n");
+        		}
+    		}
+    
+   			 ret = allocate_char(&ch);
+    		break;
+			}
+			case 2: {
         		printf("\n");    
 				short sh;	
 				while(1){
 					fprintf(stdout,"Enter the short >>> ");
 					if(check_input_short(&sh)){  break; }
-					fprintf(stderr,"\nError >>> Invalid short format (no chars, decimals or overflow)\n\n"); 
+					fprintf(stderr,"\nError >>> Invalid short format");
+					fprintf(stderr,"(no chars, decimals or overflow)\n\n"); 
 				}
 				ret = allocate_short(&sh);
 			   break;
-			case 2:
-        		printf("\n");    
-        		fprintf(stdout,"Enter the char >>> ");
-        		char ch; 
-				char buf[1000];
-        
-        		fscanf(stdin,"%999s", buf); // BUFFER OVERFLOW PROTECTION // 
-        
-        	while(strlen(buf) != 1){
-            	fprintf(stderr,"Error >>> Enter just one char at a time...\n");
-            	fprintf(stdout,"Enter the char >>> ");
-            	fscanf(stdin, "%999s", buf); 
-        	}
-        
-       		 if(strlen(buf) == 1){
-            	ch = buf[0];
-        		}
-
-       			 ret = allocate_char(&ch);
-        		break;
+			}
 			case 3:
         		printf("\n");    
 				fprintf(stdout,"Enter the int >>> ");

@@ -2,16 +2,16 @@
 #include <stdlib.h>
 #include<stdbool.h>
 typedef enum types_tag {
-	TYPE_SHORT  = 0,
 	TYPE_CHAR   = 1,
-	TYPE_INT    = 2,
-	TYPE_DOUBLE = 3,
-	TYPE_STRING = 4
+	TYPE_SHORT  = 2,
+	TYPE_INT    = 3,
+	TYPE_DOUBLE = 4,
+	TYPE_STRING = 5
 } tags_t;
 
 typedef union {
-	short short_num;
 	char char_num;
+	short short_num;
 	int int_num; 
 	double double_num; 	
 	char* string;
