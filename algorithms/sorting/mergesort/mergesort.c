@@ -27,6 +27,7 @@
 #include<time.h>
 void mergesort(int* arr, int begin, int end);
 void merge(int *A, size_t p,size_t q,size_t r);
+
 int main(int argc, char**argv){
 int A[] =  {2,4,5,7,1,2,3,6};
  size_t p = 0;

@@ -118,12 +118,12 @@ bool check_push_options_choice(int* choice){
 type_t* manage_push_options_choice(int* option){
 		type_t* ret = NULL; 
 		switch(*option){
-			case 1: { 
- 		 	  printf("\n");
-    		  char ch;
-    		  char buffer[128];
-
-    			while (1) {
+			case 1: {
+				printf("\n");
+    		  	char ch;
+    		  	char buffer[128];
+    			
+				while (1) {
         			fprintf(stdout, "Enter the char >>> ");
         			if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
             		continue;
@@ -132,19 +132,19 @@ type_t* manage_push_options_choice(int* option){
 				  a sequence like "a\n\0" (length 2)  */
 					if (strlen(buffer) == 2 && buffer[0] != '\n') {
             
-           		 if (isdigit((unsigned char)buffer[0])) {
-                	fprintf(stderr, "\nError >>> Enter just a char, no digits...\n");
-                	continue;
-            	}	
+           		    if (isdigit((unsigned char)buffer[0])) {
+                		fprintf(stderr, "\nError >>> Enter just a char, no digits...\n");
+                		continue;
+            		}	
             	ch = buffer[0];
            		 break; // clean input // 
             
-        		} else {
+        			} else {
             	fprintf(stderr, "\nError >>> Enter just one char at a time...\n");
         		}
     		}
     
-   			 ret = allocate_char(&ch);
+   			ret = allocate_char(&ch);
     		break;
 			}
 			case 2: {
@@ -157,15 +157,20 @@ type_t* manage_push_options_choice(int* option){
 					fprintf(stderr,"(no chars, decimals or overflow)\n\n"); 
 				}
 				ret = allocate_short(&sh);
-			   break;
+			   	break;
 			}
-			case 3:
+			case 3: {
         		printf("\n");    
+			   	int integer;
+				while(1){
 				fprintf(stdout,"Enter the int >>> ");
-			   	int integer = 0;
-				fscanf(stdin,"%d",&integer);
+				if(check_input_int(&integer)) { break; }				
+					fprintf(stderr,"\nError >>> invalid int format)"); 
+					fprintf(stderr,"(no chars, decimals or overflow)");
+				}
 			   	ret = allocate_int(&integer);
 				break;
+			}
 			case 4:
         		printf("\n");    
 				fprintf(stdout,"Enter the double >>> ");
@@ -186,21 +191,40 @@ type_t* manage_push_options_choice(int* option){
 }
 bool check_input_short(short* target){
 
-	char buffer[128];
+	char buffer[1200];
     if (fgets(buffer, sizeof(buffer), stdin) == NULL) { return false; }
-
     char* endptr;
     errno = 0;
     long val = strtol(buffer, &endptr, 10);
 
-    if (endptr == buffer || (*endptr != '\n' && *endptr != '\0') || errno == ERANGE) {
-        return false; 
-	}
+    if (  endptr == buffer || 
+	   (  *endptr != '\n'  &&
+		  *endptr != '\0') || 
+		  errno == ERANGE) { return false; }
 
-    if (val < SHRT_MIN || val > SHRT_MAX) { return false; }
+    if ( val < SHRT_MIN || 
+		 val > SHRT_MAX)   { return false; }
 
-    *target = (short)val;
-    return true;
+     *target = (short)val;
+    
+	 return true; // safe input //
+}
+
+bool check_input_int(int* target){
+	
+	char buffer[1200];
+    if (fgets(buffer, sizeof(buffer), stdin) == NULL) { return false; }
+    char* endptr;
+    errno = 0;
+    long val = strtol(buffer, &endptr, 10);
+
+	if ( endptr  == buffer || 
+	   ( *endptr != '\n'   &&
+	  	 *endptr != '\0')  ||
+	   	 errno == ERANGE)  { return false; }
+	*target = (int)val; 
+
+	return true; // safe //
 }
 
 type_t* allocate_short(short* sh) {
@@ -267,7 +291,7 @@ type_t* allocate_string(char* src_string,size_t len){
 	return ret; 
 }
 
-char* manage_string_input(size_t* len){
+char* check_input_string(size_t* len){
 	fprintf(stdout, "Enter the string >>> ");
     
     size_t capacity = 16; 

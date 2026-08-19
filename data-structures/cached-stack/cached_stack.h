@@ -48,8 +48,9 @@ void print_divider(void);
 bool check_push_options_choice(int* choice); 
 type_t* manage_push_options_choice(int* option);
 
-bool check_input_short(short* target);
-char* manage_string_input(size_t* len);
+bool  check_input_short(short* target);
+bool  check_input_int(int* target);
+char* check_input_short(size_t* len);
 
 /*============== Dynamic Allocation ================ */ 
 type_t* allocate_short(short* sh);
