@@ -50,8 +50,8 @@ type_t* manage_push_options_choice(int* option);
 
 bool  check_input_short(short* target);
 bool  check_input_int(int* target);
-char* check_input_short(size_t* len);
-
+bool  check_input_double(double* target);
+char* check_input_string(size_t* len);
 /*============== Dynamic Allocation ================ */ 
 type_t* allocate_short(short* sh);
 type_t* allocate_char(char* ch);

@@ -1,5 +1,5 @@
 /* Implemenation of a generic "cached" stack data structure. 
- * For fun and for stydying the "tagged union" technique.
+* For fun and for stydying the "tagged union" technique.
  * Copyright (C) Lorenzo Tomasello 2026                      */
 
 #include<stdio.h>
@@ -7,6 +7,7 @@
 #include<ctype.h>
 #include<stdlib.h>
 #include<limits.h>
+#include<float.h>
 #include<errno.h>
 #include"cached_stack.h"
 
@@ -73,9 +74,7 @@ void push_options(void){
 	printf("What kind of data do you want to push?\n\n");
 	printf("1 >>> char\n2 >>> short\n3 >>> int\n4 >>> double\n5 >>> string\n");
 }
-void print_divider(void){
-	fprintf(stdout,"\n\n/* =========================================== */\n\n"); 	
-}
+void print_divider(void){ fprintf(stdout,"\n\n/* =========================================== */\n\n"); }
 
 
 void clean_buffer(void){
@@ -153,6 +152,7 @@ type_t* manage_push_options_choice(int* option){
 				while(1){
 					fprintf(stdout,"Enter the short >>> ");
 					if(check_input_short(&sh)){  break; }
+					
 					fprintf(stderr,"\nError >>> Invalid short format");
 					fprintf(stderr,"(no chars, decimals or overflow)\n\n"); 
 				}
@@ -163,8 +163,9 @@ type_t* manage_push_options_choice(int* option){
         		printf("\n");    
 			   	int integer;
 				while(1){
-				fprintf(stdout,"Enter the int >>> ");
-				if(check_input_int(&integer)) { break; }				
+					fprintf(stdout,"Enter the int >>> ");
+					if(check_input_int(&integer)) { break; }				
+				
 					fprintf(stderr,"\nError >>> invalid int format)"); 
 					fprintf(stderr,"(no chars, decimals or overflow)");
 				}
@@ -173,15 +174,22 @@ type_t* manage_push_options_choice(int* option){
 			}
 			case 4:
         		printf("\n");    
-				fprintf(stdout,"Enter the double >>> ");
 				double doub; 
+				while(1){
+					fprintf(stdout,"Enter the double >>> ");
+					if(check_input_double(&doub)) { break; }
+					
+					fprintf(stderr,"\nError >>> invalid double format)"); 
+					fprintf(stderr,"(no chars or overflow)");
+
+				}
 				fscanf(stdin,"%lf", &doub);
 				ret = allocate_double(&doub); 	
 				break;
 			case 5:
         		printf("\n");    
 				size_t string_lenght = 0;  
-				char* string = manage_string_input(&string_lenght);
+				char* string = check_input_string(&string_lenght);
 				 ret = allocate_string(string,string_lenght);
 				break; 				
 			} // end switch //
@@ -222,9 +230,32 @@ bool check_input_int(int* target){
 	   ( *endptr != '\n'   &&
 	  	 *endptr != '\0')  ||
 	   	 errno == ERANGE)  { return false; }
+    
+	if ( val < INT_MIN || 
+		 val > INT_MAX)   { return false; }
+	
 	*target = (int)val; 
-
 	return true; // safe //
+}
+
+bool check_input_double(double* target){
+	
+	char buffer[1200];
+	if(fgets(buffer, sizeof(buffer), stdin) == NULL ) { return false; }
+	char* endptr; 
+	errno = 0; 
+	long val = strtol(buffer, &endptr, 10);
+
+	if ( endptr  == buffer || 
+	   ( *endptr != '\n'   &&
+	  	 *endptr != '\0')  ||
+	   	 errno == ERANGE)  { return false; }
+    
+	if ( val < DBL_MIN || 
+		 val > DBL_MAX)   { return false; }
+	
+	*target = (double)val; 
+	return true; // safe // 
 }
 
 type_t* allocate_short(short* sh) {
@@ -499,4 +530,13 @@ void set_cache_bottom(Cache* cachePtr){
 
 
 
-
+/*======================= TO DO ===========================
+ *
+ *	Fix the check_input_char function, it is different from
+ *  the other foos that I wrote for the same task
+ *
+ *
+ *
+ *
+ *
+ * */
