@@ -166,8 +166,8 @@ type_t* manage_push_options_choice(int* option){
 					fprintf(stdout,"Enter the int >>> ");
 					if(check_input_int(&integer)) { break; }				
 				
-					fprintf(stderr,"\nError >>> invalid int format)"); 
-					fprintf(stderr,"(no chars, decimals or overflow)");
+					fprintf(stderr,"\nError >>> invalid int format "); 
+					fprintf(stderr,"(no chars, decimals or overflow)\n\n");
 				}
 			   	ret = allocate_int(&integer);
 				break;
@@ -180,7 +180,7 @@ type_t* manage_push_options_choice(int* option){
 					if(check_input_double(&doub)) { break; }
 					
 					fprintf(stderr,"\nError >>> invalid double format)"); 
-					fprintf(stderr,"(no chars or overflow)");
+					fprintf(stderr,"(no chars or overflow)\n\n");
 
 				}
 				fscanf(stdin,"%lf", &doub);
