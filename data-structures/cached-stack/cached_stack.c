@@ -15,10 +15,18 @@ int main(void) {
     Stack* STACK = NULL; 
 	Cache* CACHE = NULL; 
     
-	int instructions_choice;
+	/*
+	 * Main menu management, to handle the first step of the program
+	 * 																	*/
+	int instruction_choice; 
+	/*
+	 * This variable is used to manage the choice of data type to push 
+	 * 																	 */
 	int push_options_choice; 
-   	main_loop_instructions();
-    printf(">>> ");
+
+	main_loop_instructions(); /* Dipslays the general menu of the progam */
+    
+	printf(">>> ");
 	while(1){
 		if(!check_input(&instructions_choice)){
 		fprintf(stderr,"\nPlease, enter a number >>> ");
@@ -82,7 +90,13 @@ void clean_buffer(void){
         while((c = getchar())!= '\n' && c != EOF);
 }
 
-
+/* ================================================ check_input =================================================
+ *
+ * This function performs an initial check on the input provided by the user when selecting the operation
+ * for the program to execute. If the user enters characters or floating-point numbers, the function 
+ * returns an error, and the loop prompts the user to enter a valid choice again.
+ *
+ * =========================================================================================================== */
 bool check_input(int* target) {
   
   	char buffer[128];
