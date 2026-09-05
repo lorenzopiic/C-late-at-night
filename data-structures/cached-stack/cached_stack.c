@@ -75,6 +75,8 @@ main(void)
    so that we can make the wrappers that actually allocate the data in the heap work
 
 */
+// TO DO // 
+// PUSH INSERTION LOGIC // 
          break;
         case 2:
             break;
@@ -158,6 +160,14 @@ bool check_push_options_choice(int* choice){
 	}
 }
 
+/* DESCRIPTION:
+  
+  "manage_push_options_choice()"
+    
+  This function serves as a "type dispatcher". It determines the user-selected data type at runtime
+  and delegates memory allocation to the corresponding type-specific function.
+
+*/
 type_t* manage_push_options_choice(int* option){
 		type_t* ret = NULL; 
 		switch(*option){
