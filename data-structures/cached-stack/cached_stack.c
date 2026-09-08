@@ -11,7 +11,9 @@
 #include<errno.h>
 #include"cached_stack.h"
 
-int main(void) {
+int 
+main(void) 
+{
     Stack* STACK = NULL; 
 	Cache* CACHE = NULL; 
     
@@ -28,16 +30,28 @@ int main(void) {
     
 	printf(">>> ");
 	while(1){
+
+/* <<instruction_choice>> is for them main menu management
+ * to handle the first step of the program 	*/
+	int instruction_choice; 
+	
+/* <<push_options_choice>> is used to manage the choice of data type to push*/
+	int push_options_choice; 
+
+	main_loop_instructions(); /* Dipslays the general menu of the program */
+    
+	printf(">>> ");
+	while(1){ /* See check_input */
 		if(!check_input(&instructions_choice)){
 		fprintf(stderr,"\nPlease, enter a number >>> ");
         continue;
       }
 	if(instructions_choice == 3 ) { break; }
       switch (instructions_choice) {
-			case 1:
-            print_divider();
-            push_options();
-            printf(">>> ");
+        case 1:
+             print_divider();
+             push_options(); /* Displays the data types supported by the data structure */
+             printf(">>> ");
 
             while (1) {
                 if (!check_input(&push_options_choice)) {
@@ -54,7 +68,21 @@ int main(void) {
             }
 			// Ok, now we are sure that the choice of what to push is a number between 1-5 //
             type_t* data = manage_push_options_choice(&push_options_choice); 
-            break;
+
+/* DESCRIPTION:
+   
+   "type_t"
+   
+   type_t: This struct represents the data type abstraction that we want to push into the data structure;
+   essentially inside it there is:
+  
+    - a "union" containing the data types that I have prepared for the program and then,
+    - an "enum" that reports the tags of the various types
+   
+   so that we can make the wrappers that actually allocate the data in the heap work
+
+*/
+         break;
         case 2:
             break;
         default:
@@ -97,6 +125,15 @@ void clean_buffer(void){
  * returns an error, and the loop prompts the user to enter a valid choice again.
  *
  * =========================================================================================================== */
+/* DESCRIPTION:
+  
+  "check_input()" 
+ 
+  This function performs an initial check on the input provided by the user when selecting the operation
+  for the program to execute. If the user enters "characters" or "floating-point numbers", the function 
+  returns an error, and the loop prompts the user to enter a valid choice again.
+ 
+  */
 bool check_input(int* target) {
   
   	char buffer[128];
@@ -115,6 +152,13 @@ bool check_input(int* target) {
     return true;
 }
 
+/*  DESCRIPTION: 
+   
+    "check_push_options_choice()"
+   
+    This function checks whether the integer entered by the user is between 1 and 5; if this check fails, the foo
+    returns an error and this time the loop prompts you to enter a valid option until the latter is provided.
+*/ 
 bool check_push_options_choice(int* choice){
 	switch(*choice){
 		case 1:
@@ -179,6 +223,7 @@ type_t* manage_push_options_choice(int* option){
 				while(1){
 					fprintf(stdout,"Enter the int >>> ");
 					if(check_input_int(&integer)) { break; }				
+				if(check_input_int(&integer)) { break; }				
 				
 					fprintf(stderr,"\nError >>> invalid int format "); 
 					fprintf(stderr,"(no chars, decimals or overflow)\n\n");
