@@ -1,6 +1,6 @@
 /* Implemenation of a generic "cached" stack data structure. 
-* For fun and for stydying the "tagged union" technique.
- * Copyright (C) Lorenzo Tomasello 2026                      */
+*  For fun and for stydying the "tagged union" technique.
+*  Copyright (C) Lorenzo Tomasello 2026                      */
 
 #include<stdio.h>
 #include<string.h>
@@ -25,7 +25,7 @@ main(void)
    "push_options_choice" is used to manage the choice of data type to push
    
 */
-	int instructions_choice; 
+	int instruction_choice; 	
 	int push_options_choice; 
 
     
