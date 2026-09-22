@@ -17,37 +17,30 @@ main(void)
     Stack* STACK = NULL; 
 	Cache* CACHE = NULL; 
     
-	/*
-	 * Main menu management, to handle the first step of the program
-	 * 																	*/
-	int instruction_choice; 
-	/*
-	 * This variable is used to manage the choice of data type to push 
-	 * 																	 */
+
+/* 
+ 
+   "instructions_choice" is used for them main menu management to handle the first step of the program
+
+   "push_options_choice" is used to manage the choice of data type to push
+   
+*/
+	int instructions_choice; 
 	int push_options_choice; 
 
+    
 	main_loop_instructions(); /* Dipslays the general menu of the progam */
-    
 	printf(">>> ");
-	while(1){
 
-/* <<instruction_choice>> is for them main menu management
- * to handle the first step of the program 	*/
-	int instruction_choice; 
-	
-/* <<push_options_choice>> is used to manage the choice of data type to push*/
-	int push_options_choice; 
-
-	main_loop_instructions(); /* Dipslays the general menu of the program */
-    
-	printf(">>> ");
-	while(1){ /* See check_input */
+	while(1){ 
+		/* See check_input */
 		if(!check_input(&instructions_choice)){
-		fprintf(stderr,"\nPlease, enter a number >>> ");
-        continue;
-      }
-	if(instructions_choice == 3 ) { break; }
-      switch (instructions_choice) {
+			fprintf(stderr,"\nPlease, enter a number >>> ");
+        	continue;
+      	}
+		if(instructions_choice == 3 ) { break; }
+      
+		switch (instructions_choice) {
         case 1:
              print_divider();
              push_options(); /* Displays the data types supported by the data structure */
@@ -118,13 +111,6 @@ void clean_buffer(void){
         while((c = getchar())!= '\n' && c != EOF);
 }
 
-/* ================================================ check_input =================================================
- *
- * This function performs an initial check on the input provided by the user when selecting the operation
- * for the program to execute. If the user enters characters or floating-point numbers, the function 
- * returns an error, and the loop prompts the user to enter a valid choice again.
- *
- * =========================================================================================================== */
 /* DESCRIPTION:
   
   "check_input()" 
@@ -223,7 +209,6 @@ type_t* manage_push_options_choice(int* option){
 				while(1){
 					fprintf(stdout,"Enter the int >>> ");
 					if(check_input_int(&integer)) { break; }				
-				if(check_input_int(&integer)) { break; }				
 				
 					fprintf(stderr,"\nError >>> invalid int format "); 
 					fprintf(stderr,"(no chars, decimals or overflow)\n\n");
@@ -238,18 +223,24 @@ type_t* manage_push_options_choice(int* option){
 					fprintf(stdout,"Enter the double >>> ");
 					if(check_input_double(&doub)) { break; }
 					
-					fprintf(stderr,"\nError >>> invalid double format)"); 
+					fprintf(stderr,"\nError >>> invalid double format "); 
 					fprintf(stderr,"(no chars or overflow)\n\n");
 
 				}
-				fscanf(stdin,"%lf", &doub);
 				ret = allocate_double(&doub); 	
 				break;
 			case 5:
-        		printf("\n");    
-				size_t string_lenght = 0;  
-				char* string = check_input_string(&string_lenght);
-				 ret = allocate_string(string,string_lenght);
+        		printf("\n");   
+			    char* string; 
+				while(1){
+					fprintf(stdout,"Enter the string >>> ");
+				    if(check_input_string(&string)) { break ; }	
+					
+					fprintf(stderr,"\n Error >>> invalid string format ");
+					fprintf(stdout,"only characters are allowed\n\n"); 
+				   		
+				}	
+				ret = allocate_string(string);
 				break; 				
 			} // end switch //
 		
@@ -317,6 +308,27 @@ bool check_input_double(double* target){
 	return true; // safe // 
 }
 
+bool check_input_string(char** target){
+	char buffer[1200];
+	if(fgets(buffer, sizeof(buffer), stdin) == NULL) { return false; }
+	
+	char* endptr; 
+	errno = 0; 
+
+	if( endptr == buffer ||
+	  ( *endptr != '\n'  &&
+		*endptr != '\0') ||
+	  	 errno == ERANGE) { return false; }
+	
+	for(size_t i = 0; buffer[i] != '\0'; i++){
+		if(isdigit(buffer[i])){ 
+			return false; 
+		}
+	}
+	size_t len = strlen(buffer);	
+	strncpy(*target,buffer,len);
+	return true; // safe //			
+}
 type_t* allocate_short(short* sh) {
 	type_t* ret = malloc(sizeof(*ret));
 	if(ret != NULL){
@@ -365,12 +377,16 @@ type_t * allocate_double(double* doub){
 	return ret; 
 }
 
-type_t* allocate_string(char* src_string,size_t len){
+type_t* allocate_string(char* src_string){
+	size_t len_counter=0; 
+	for(size_t i = 0;src_string[i] != '\0'; i++ && len_counter++){
+		; 
+	}
 	type_t* ret = malloc(sizeof(*ret));
 	if(ret != NULL){
-		char* dest_string = malloc(sizeof(len));
+		char* dest_string = malloc(sizeof(len_counter));
 	   	if(dest_string != NULL){
-			strncpy(dest_string,src_string,len);
+			strncpy(dest_string,src_string,len_counter);
 			ret->tag = TYPE_STRING;
 			ret->type.string = dest_string;
 			} else {
@@ -379,41 +395,6 @@ type_t* allocate_string(char* src_string,size_t len){
 			}	
 		}	
 	return ret; 
-}
-
-char* check_input_string(size_t* len){
-	fprintf(stdout, "Enter the string >>> ");
-    
-    size_t capacity = 16; 
-    size_t length = 0;    
-    
-    char* str = malloc(capacity);
-    if (str == NULL) {
-        perror("Allocation error...");
-        return NULL;
-    }
-
-    int c;
-    while ((c = getchar()) != '\n' && c != EOF) {
-        str[length++] = (char)c; 
-        if (length == capacity) {
-            capacity *= 2;
-            char* temp = realloc(str, capacity);
-            if (temp == NULL) {
-                perror("Reallocation error...");
-                free(str);
-                return NULL;
-            }
-            str = temp;
-        }
-    }
-    str[length] = '\0';
-    char* final_str = realloc(str, length + 1);
-    if (final_str != NULL) {
-        str = final_str;
-    }
-	*len = length; 
-    return str;
 }
 
 void push(Stack* stackPtr, type_t item){
@@ -586,16 +567,22 @@ void set_cache_bottom(Cache* cachePtr){
 
 
 
-
-
-
 /*======================= TO DO ===========================
  *
  *	Fix the check_input_char function, it is different from
  *  the other foos that I wrote for the same task
  *
- *
+ *  Need to fix bugs in string handling
  *
  *
  *
  * */
+
+
+
+
+
+
+
+
+
