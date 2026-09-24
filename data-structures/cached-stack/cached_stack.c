@@ -14,9 +14,16 @@
 int 
 main(void) 
 {
-    Stack* STACK = NULL; 
-	Cache* CACHE = NULL; 
-    
+    Stack* STACK = malloc(sizeof *STACK);
+    if(STACK == NULL){
+        perror("Allocation Error\n");
+        return EXIT_FAILURE; 
+} 
+	Cache* CACHE = malloc(sizeof *CACHE);
+    if(CACHE == NULL){
+        perror("Allocation Error\n");
+        return EXIT_FAILURE; 
+    }
 
 /* 
  
@@ -25,7 +32,7 @@ main(void)
    "push_options_choice" is used to manage the choice of data type to push
    
 */
-	int instruction_choice; 	
+	int instructions_choice; 	
 	int push_options_choice; 
 
     
@@ -77,7 +84,8 @@ main(void)
 */
 // TO DO // 
 // PUSH INSERTION LOGIC // 
-         break;
+      if (push(STACK, data));
+           break;
         case 2:
             break;
         default:
@@ -246,8 +254,8 @@ type_t* manage_push_options_choice(int* option){
 					fprintf(stdout,"Enter the string >>> ");
 				    if(check_input_string(&string)) { break ; }	
 					
-					fprintf(stderr,"\n Error >>> invalid string format ");
-					fprintf(stdout,"only characters are allowed\n\n"); 
+					fprintf(stderr,"\nError >>> invalid string format ");
+					fprintf(stdout,"(only characters are allowed)\n\n"); 
 				   		
 				}	
 				ret = allocate_string(string);
@@ -407,7 +415,7 @@ type_t* allocate_string(char* src_string){
 	return ret; 
 }
 
-void push(Stack* stackPtr, type_t item){
+bool push(Stack* stackPtr, type_t item){
 	stacknode* newNode = malloc(sizeof(*newNode));
 	if(newNode != NULL){
 		switch(item.tag){
@@ -428,15 +436,14 @@ void push(Stack* stackPtr, type_t item){
 				perror("Allocation Error...");
 				temp = NULL;
 			   	free(newNode);
-				return; 	
+				return false;  	
 			}
 		   	break; 	   
 		} // end Switch // 
-		if(stackPtr == NULL){
+		if(stackPtr->head == NULL){
 			stackPtr->head = newNode; 
 		   	stackPtr->head->nextNode = NULL; 
-			stackPtr->nodes_counter++;
-			return; 			
+			stackPtr->nodes_counter++; 			
 		}
 		newNode->nextNode = stackPtr->head;
 	   	stackPtr->head = newNode; 		
@@ -444,7 +451,7 @@ void push(Stack* stackPtr, type_t item){
 	} else {
 		perror("Allocation Error...");
 		newNode = NULL; 
-		return;
+		return false; 
 	}
 }
 
@@ -582,7 +589,7 @@ void set_cache_bottom(Cache* cachePtr){
  *	Fix the check_input_char function, it is different from
  *  the other foos that I wrote for the same task
  *
- *  Need to fix bugs in string handling
+ *  Need to fix bugs in string handling, and in double number checking 
  *
  *
  *

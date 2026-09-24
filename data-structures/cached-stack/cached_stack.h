@@ -63,8 +63,8 @@ type_t* allocate_string(char* src_strng);
 
 /*=============== Stack ================ */
 
-void push(Stack* stackPtr, type_t value);
-void pop(Stack* stackPtr, Cache* cachePtr);
+bool push(Stack* stackPtr, type_t* value);
+bool pop(Stack* stackPtr, Cache* cachePtr);
 
 /*=============== Cache ================ */
 
