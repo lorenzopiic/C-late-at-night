@@ -84,9 +84,14 @@ main(void)
 */
 // TO DO // 
 // PUSH INSERTION LOGIC // 
-      if (push(STACK, data));
+      if (!push(STACK, data)){
+        fprintf(stderr,"Error! Something went wrong...\n");
+    }
            break;
         case 2:
+        if(pop(STACK,CACHE)){
+            fprintf(stdout,"An element was successully popped from the stack!\n");         
+    }
             break;
         default:
             printf("\nError! Invalid choice...\n\n");
@@ -415,22 +420,23 @@ type_t* allocate_string(char* src_string){
 	return ret; 
 }
 
-bool push(Stack* stackPtr, type_t item){
+bool push(Stack* stackPtr, type_t* item){
 	stacknode* newNode = malloc(sizeof(*newNode));
 	if(newNode != NULL){
-		switch(item.tag){
+		switch(item->tag){
 			case 0: 
 			case 1: 
 			case 2: 
 			case 3:
-			   newNode->value = item;	
+			   newNode->value.type = item->type;
+               newNode->value.tag = item->tag;	
 			   break;
 			case 4: 
-			   char* temp = malloc(strlen(item.type.string) + 1);
+			   char* temp = malloc(strlen(item->type.string) + 1);
 			   if(temp != NULL) {
-			   	strcpy(temp, item.type.string);
-			   	temp[strlen(item.type.string)] = '\0';
-			   	newNode->value.tag = item.tag;
+			   	strcpy(temp, item->type.string);
+			   	temp[strlen(item->type.string)] = '\0';
+			   	newNode->value.tag = item->tag;
 			  	newNode->value.type.string = temp;
 			} else {
 				perror("Allocation Error...");
@@ -444,18 +450,20 @@ bool push(Stack* stackPtr, type_t item){
 			stackPtr->head = newNode; 
 		   	stackPtr->head->nextNode = NULL; 
 			stackPtr->nodes_counter++; 			
-		}
+		} else {
 		newNode->nextNode = stackPtr->head;
 	   	stackPtr->head = newNode; 		
 		stackPtr->nodes_counter++; 
-	} else {
+	} 
+        } else {
 		perror("Allocation Error...");
 		newNode = NULL; 
 		return false; 
 	}
+    return true; 
 }
 
-void pop(Stack* stackPtr, Cache* cachePtr){
+bool pop(Stack* stackPtr, Cache* cachePtr){
 	if(stackPtr->head == NULL){
 	  	fprintf(stderr,"Stack is empty...\n"); 
 		exit(EXIT_FAILURE); 
