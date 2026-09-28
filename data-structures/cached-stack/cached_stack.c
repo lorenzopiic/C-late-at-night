@@ -424,14 +424,14 @@ bool push(Stack* stackPtr, type_t* item){
 	stacknode* newNode = malloc(sizeof(*newNode));
 	if(newNode != NULL){
 		switch(item->tag){
-			case 0: 
-			case 1: 
-			case 2: 
-			case 3:
+			case TYPE_CHAR: 
+			case TYPE_SHORT: 
+			case TYPE_INT: 
+			case TYPE_DOUBLE:
 			   newNode->value.type = item->type;
                newNode->value.tag = item->tag;	
 			   break;
-			case 4: 
+			case TYPE_STRING: 
 			   char* temp = malloc(strlen(item->type.string) + 1);
 			   if(temp != NULL) {
 			   	strcpy(temp, item->type.string);
