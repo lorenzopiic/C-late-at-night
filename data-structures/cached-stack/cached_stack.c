@@ -11,6 +11,9 @@
 #include<errno.h>
 #include"cached_stack.h"
 
+
+#define DEBUG
+
 int 
 main(void) 
 {
@@ -184,7 +187,7 @@ bool check_push_options_choice(int* choice){
 type_t* manage_push_options_choice(int* option){
 		type_t* ret = NULL; 
 		switch(*option){
-			case 1: {
+			case TYPE_CHAR: {
 				printf("\n");
     		  	char ch;
     		  	char buffer[128];
@@ -213,7 +216,7 @@ type_t* manage_push_options_choice(int* option){
    			ret = allocate_char(&ch);
     		break;
 			}
-			case 2: {
+			case TYPE_SHORT: {
         		printf("\n");    
 				short sh;	
 				while(1){
@@ -226,7 +229,7 @@ type_t* manage_push_options_choice(int* option){
 				ret = allocate_short(&sh);
 			   	break;
 			}
-			case 3: {
+			case TYPE_INT: {
         		printf("\n");    
 			   	int integer;
 				while(1){
@@ -239,7 +242,7 @@ type_t* manage_push_options_choice(int* option){
 			   	ret = allocate_int(&integer);
 				break;
 			}
-			case 4:
+			case TYPE_DOUBLE:
         		printf("\n");    
 				double doub; 
 				while(1){
@@ -252,12 +255,12 @@ type_t* manage_push_options_choice(int* option){
 				}
 				ret = allocate_double(&doub); 	
 				break;
-			case 5:
+			case TYPE_STRING:
         		printf("\n");   
-			    char* string; 
+			    char* string = NULL; 
 				while(1){
 					fprintf(stdout,"Enter the string >>> ");
-				    if(check_input_string(&string)) { break ; }	
+				    if(check_input_string(&string)) { break; }	
 					
 					fprintf(stderr,"\nError >>> invalid string format ");
 					fprintf(stdout,"(only characters are allowed)\n\n"); 
@@ -265,7 +268,9 @@ type_t* manage_push_options_choice(int* option){
 				}	
 				ret = allocate_string(string);
 				break; 				
-			} // end switch //
+		    default:
+                return NULL; //invalid TYPE returns an error	
+        } // end switch //
 		
 	print_divider(); 	
 	return ret;
@@ -331,7 +336,7 @@ bool check_input_double(double* target){
 	return true; // safe // 
 }
 
-bool check_input_string(char** target){
+bool check_input_string(char** target, size_t target_len){
 	char buffer[1200];
 	if(fgets(buffer, sizeof(buffer), stdin) == NULL) { return false; }
 	
@@ -348,8 +353,9 @@ bool check_input_string(char** target){
 			return false; 
 		}
 	}
-	size_t len = strlen(buffer);	
-	strncpy(*target,buffer,len);
+	size_t buffer_len = strlen(buffer);	
+	*target = malloc(strlen(buffer_len));
+    strncpy(*target,buffer,buffer_len);
 	return true; // safe //			
 }
 type_t* allocate_short(short* sh) {
@@ -432,7 +438,10 @@ bool push(Stack* stackPtr, type_t* item){
                newNode->value.tag = item->tag;	
 			   break;
 			case TYPE_STRING: 
-			   char* temp = malloc(strlen(item->type.string) + 1);
+			   #ifdef DEBUG
+                printf("\n DEBUG >>> strlen(item->type.string) : %d\n",strlen(item->type.string)); 
+                #endif
+                 char* temp = malloc(strlen(item->type.string) + 1);
 			   if(temp != NULL) {
 			   	strcpy(temp, item->type.string);
 			   	temp[strlen(item->type.string)] = '\0';
