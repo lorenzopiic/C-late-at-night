@@ -12,7 +12,7 @@
 #include"cached_stack.h"
 
 
-#define DEBUG
+//#define DEBUG
 
 int 
 main(void) 
@@ -336,28 +336,56 @@ bool check_input_double(double* target){
 	return true; // safe // 
 }
 
-bool check_input_string(char** target, size_t target_len){
-	char buffer[1200];
+bool check_input_string(char** target){
+	char buffer[4000];
 	if(fgets(buffer, sizeof(buffer), stdin) == NULL) { return false; }
-	
-	char* endptr; 
-	errno = 0; 
+	size_t buffer_len = strlen(buffer);	
+    
+/*  if just a newline was typed we return an error */
+    if(buffer_len == 0) { return false; }   
 
-	if( endptr == buffer ||
-	  ( *endptr != '\n'  &&
-		*endptr != '\0') ||
-	  	 errno == ERANGE) { return false; }
-	
+	#ifdef DEBUG
+        printf("\nDEBUG inside check_input_string()\n>>> buffer read form stdin: %s\n",buffer); 
+        printf("\nDEBUG inside check_input_string()\n>>> buffer_len %d\n",buffer_len);
+    #endif
+
+/*
+  fgets() DESCRIPTION
+ 
+  fgets() reads in at most one less than size characters from stream and stores them into the buffer
+  pointed  to  by  s. 
+  Reading  stops after an EOF or a newline.
+  If a newline is read it is stored into the buffer.
+  A terminating null byte ('\0') is stored after the last character in the buffer.
+*/
+ 
+/* 
+ So we have to fix the problem that fgets() stores th newline onto the buffer
+    
+     0 1 2 3 4  5  6
+    |h|e|l|l|o|\n|\0|    
+     
+    so the len of the string should be 6, and we have to replace the nullbyte at stringlen-1; 
+*/
+    if(buffer_len > 0 && buffer[buffer_len-1] == '\n'){
+       buffer[buffer_len-1] = '\0';
+
+}
 	for(size_t i = 0; buffer[i] != '\0'; i++){
 		if(isdigit(buffer[i])){ 
 			return false; 
 		}
 	}
-	size_t buffer_len = strlen(buffer);	
-	*target = malloc(strlen(buffer_len));
+    *target = malloc(sizeof(char) * buffer_len);
+    if(*target == NULL){
+        perror("Allocation error...\n");
+        *target = NULL;  
+       return false;
+}
     strncpy(*target,buffer,buffer_len);
 	return true; // safe //			
 }
+
 type_t* allocate_short(short* sh) {
 	type_t* ret = malloc(sizeof(*ret));
 	if(ret != NULL){
@@ -408,9 +436,21 @@ type_t * allocate_double(double* doub){
 
 type_t* allocate_string(char* src_string){
 	size_t len_counter=0; 
-	for(size_t i = 0;src_string[i] != '\0'; i++ && len_counter++){
-		; 
-	}
+/* 
+ ok, we recive a pointer to a line organizied like this:
+
+  0 1 2 3 4  5 
+ |h|e|l|l|o|\0|
+
+ so the for loop below will count the exact length of the line.
+
+ We need to increase the counter another time to reserve space for the '\0'
+
+*/	
+    for(size_t i = 0;src_string[i] != '\0'; i++ && len_counter++){ ; }
+    
+    len_counter++; // IMPORTANT // 
+
 	type_t* ret = malloc(sizeof(*ret));
 	if(ret != NULL){
 		char* dest_string = malloc(sizeof(len_counter));
@@ -439,14 +479,19 @@ bool push(Stack* stackPtr, type_t* item){
 			   break;
 			case TYPE_STRING: 
 			   #ifdef DEBUG
-                printf("\n DEBUG >>> strlen(item->type.string) : %d\n",strlen(item->type.string)); 
+                printf("\nDEBUG case TYPE_STRING inside push()\n"
+                ">>> strlen(item->type.string) : %d\n" ,strlen(item->type.string)); 
                 #endif
-                 char* temp = malloc(strlen(item->type.string) + 1);
+                 char* temp = malloc(strlen(item->type.string));
 			   if(temp != NULL) {
-			   	strcpy(temp, item->type.string);
-			   	temp[strlen(item->type.string)] = '\0';
+			   	strncpy(temp, item->type.string, strlen(item->type.string));
 			   	newNode->value.tag = item->tag;
 			  	newNode->value.type.string = temp;
+                #ifdef DEBUG
+                printf("\nDEBUG case TYPE_STRING's newNode allocation inside push()\n"
+                       ">>> printing newNode->value.type.string : %s\n",
+                        newNode->value.type.string); 
+                #endif
 			} else {
 				perror("Allocation Error...");
 				temp = NULL;
