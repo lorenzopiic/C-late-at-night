@@ -11,8 +11,7 @@
 #include<errno.h>
 #include"cached_stack.h"
 
-
-//#define DEBUG
+ #define DEBUG
 
 int 
 main(void) 
@@ -42,15 +41,23 @@ main(void)
 	main_loop_instructions(); /* Dipslays the general menu of the progam */
 	printf(">>> ");
 
-	while(1){ 
+    bool mainloop = 1; 
+/*
+
+ This is the main loop that controls all the program 
+
+*/
+    while(mainloop){ 
 		/* See check_input */
-		if(!check_input(&instructions_choice)){
+		
+    if(!check_input(&instructions_choice)){
 			fprintf(stderr,"\nPlease, enter a number >>> ");
         	continue;
       	}
+        // 3 is used to end the program // 
 		if(instructions_choice == 3 ) { break; }
       
-		switch (instructions_choice) {
+	switch (instructions_choice) {
         case 1:
              print_divider();
              push_options(); /* Displays the data types supported by the data structure */
@@ -60,7 +67,7 @@ main(void)
                 if (!check_input(&push_options_choice)) {
                     fprintf(stderr, "\nError! You entered characters instead of a number!\n");
                 } else if (!check_push_options_choice(&push_options_choice)) {
-                    // not betweeen 1-5 // 
+                    // push option not betweeen 1-5 // 
 					fprintf(stderr, "\nError! You entered an invalid choice!\n");
                 } else {
                     break; 
@@ -85,10 +92,8 @@ main(void)
    so that we can make the wrappers that actually allocate the data in the heap work
 
 */
-// TO DO // 
-// PUSH INSERTION LOGIC // 
       if (!push(STACK, data)){
-        fprintf(stderr,"Error! Something went wrong...\n");
+        fprintf(stderr,"Error! Something went wrong while trying to push an element onto the stack...\n");
     }
            break;
         case 2:
@@ -389,7 +394,7 @@ bool check_input_string(char** target){
 type_t* allocate_short(short* sh) {
 	type_t* ret = malloc(sizeof(*ret));
 	if(ret != NULL){
-		ret->type.short_num = *sh; 
+		ret->type->short_num = *sh; 
 		ret->tag = TYPE_SHORT; 
 	} else {
 		perror("Allocation Error");
@@ -401,7 +406,7 @@ type_t* allocate_short(short* sh) {
 type_t* allocate_char(char* ch) {
 	type_t* ret = malloc(sizeof(*ret));
 	if(ret != NULL){
-		ret->type.char_num = *ch;
+		ret->type->char_num = *ch;
 		ret->tag = TYPE_CHAR;
 	} else {
 		perror("Allocation Error");
@@ -413,7 +418,7 @@ type_t* allocate_char(char* ch) {
 type_t* allocate_int(int* integer){
 	type_t * ret = malloc(sizeof(*ret));
 	if(ret != NULL){
-		ret->type.int_num = *integer;
+		ret->type->int_num = *integer;
 		ret->tag = TYPE_INT;
 	} else{
 		perror("Allocation error");
@@ -425,7 +430,7 @@ type_t* allocate_int(int* integer){
 type_t * allocate_double(double* doub){
 	type_t * ret = malloc(sizeof(*ret));
 	if(ret != NULL){
-		ret->type.double_num = *doub;
+		ret->type->double_num = *doub;
 		ret->tag = TYPE_DOUBLE;
 	} else {
 		perror("Allocation error...");
@@ -457,10 +462,12 @@ type_t* allocate_string(char* src_string){
 	   	if(dest_string != NULL){
 			strncpy(dest_string,src_string,len_counter);
 			ret->tag = TYPE_STRING;
-			ret->type.string = dest_string;
+			ret->type->string = dest_string;
 			} else {
 				perror("Allocation error...");
-				return NULL; 
+				free(ret);
+                ret = NULL; // Always be safe //
+                return NULL; 
 			}	
 		}	
 	return ret; 
@@ -474,23 +481,23 @@ bool push(Stack* stackPtr, type_t* item){
 			case TYPE_SHORT: 
 			case TYPE_INT: 
 			case TYPE_DOUBLE:
-			   newNode->value.type = item->type;
-               newNode->value.tag = item->tag;	
+			   newNode->value->type = item->type;
+               newNode->value->tag = item->tag;	
 			   break;
 			case TYPE_STRING: 
 			   #ifdef DEBUG
                 printf("\nDEBUG case TYPE_STRING inside push()\n"
-                ">>> strlen(item->type.string) : %d\n" ,strlen(item->type.string)); 
+                ">>> strlen(item->type->string) : %d\n" ,strlen(item->type->string)); 
                 #endif
-                 char* temp = malloc(strlen(item->type.string));
+                 char* temp = malloc(strlen(item->type->string));
 			   if(temp != NULL) {
-			   	strncpy(temp, item->type.string, strlen(item->type.string));
-			   	newNode->value.tag = item->tag;
-			  	newNode->value.type.string = temp;
+			   	strncpy(temp, item->type->string, strlen(item->type->string));
+			   	newNode->value->tag = item->tag;
+			  	newNode->value->type->string = temp;
                 #ifdef DEBUG
                 printf("\nDEBUG case TYPE_STRING's newNode allocation inside push()\n"
                        ">>> printing newNode->value.type.string : %s\n",
-                        newNode->value.type.string); 
+                        newNode->value->type->string); 
                 #endif
 			} else {
 				perror("Allocation Error...");
@@ -521,25 +528,29 @@ bool pop(Stack* stackPtr, Cache* cachePtr){
 	if(stackPtr->head == NULL){
 	  	fprintf(stderr,"Stack is empty...\n"); 
 		exit(EXIT_FAILURE); 
-	}	stacknode* temp = stackPtr->head;
-	if(cachePtr->nodes_counter < CACHESIZE){
+	}	
+    
+    // We save a reference of the current head of the stack // 
+    stacknode* temp = stackPtr->head;
+	
+    if(cachePtr->nodes_counter < CACHESIZE){
 		push_back(cachePtr, stackPtr->head->value);
 	}else{
 		manage_cache_fullness(cachePtr,stackPtr->head->value); 
 	}
-	switch(stackPtr->head->value.tag){
-		case 0: 
-		case 1: 
-		case 2: 
-		case 3:
+	switch(stackPtr->head->value->tag){
+		case TYPE_CHAR: 
+		case TYPE_SHORT: 
+		case TYPE_INT: 
+		case TYPE_DOUBLE:
 			stackPtr->head = stackPtr->head->nextNode;
 			free(temp);
 			temp = NULL;	
 			break;
-		case 4:
+		case TYPE_STRING:
 			stackPtr->head = stackPtr->head->nextNode;
-			free(temp->value.type.string);
-			temp->value.type.string = NULL;
+			free(temp->value->type->string);
+			temp->value->type->string = NULL;
 			free(temp);
 			temp = NULL; 
 			break;		
@@ -547,28 +558,25 @@ bool pop(Stack* stackPtr, Cache* cachePtr){
 	stackPtr->nodes_counter--;
 }
 
-void push_back(Cache* cachePtr,type_t item){
+void push_back(Cache* cachePtr,type_t* item){
 	stacknode* newNode = malloc(sizeof(*newNode));
 	if(newNode != NULL){
 		newNode->nextNode = NULL; 
-		switch(item.tag) {
-			case 0: 
-			case 1: 
-			case 2: 
-			case 3:
-			   newNode->value = item;	
+		switch(item->tag) {
+			case TYPE_CHAR: 
+			case TYPE_SHORT: 
+			case TYPE_INT: 
+			case TYPE_DOUBLE:
+			   newNode->value = item;
 			   break;
-			case 4: 
-			   char* temp = malloc(strlen(item.type.string) + 1);
+			case TYPE_STRING: 
+                type_t * temp = allocate_string(item->type->string);
 			   if(temp != NULL) {
-			   	strcpy(temp, item.type.string);
-			   	temp[strlen(item.type.string)] = '\0';
-			   	newNode->value.tag = item.tag;
-			  	newNode->value.type.string = temp;
-			} else {
+		        newNode->value = temp; 	
+            } else {
 				perror("Allocation Error...");
-				temp = NULL;
 			   	free(newNode);
+                newNode = NULL; 
 				return; 	
 			}
 		   	break; 	   
@@ -586,12 +594,11 @@ void push_back(Cache* cachePtr,type_t item){
 		cachePtr->nodes_counter++;
 	} else {
 		perror("Allocation Error...");
-		newNode = NULL; 
 		return;
 	}
 }
 
-void manage_cache_fullness(Cache* cachePtr,type_t item){
+void manage_cache_fullness(Cache* cachePtr,type_t* item){
 		printf("Warning! The cache memory is full!\n"
 				"Using it will override the last pushed information\n"
 				"Do you want to use it anyway?\n"
@@ -604,24 +611,24 @@ void manage_cache_fullness(Cache* cachePtr,type_t item){
 		   	fprintf(stdout,"Enter a valid choice >>> "); 	
 			scanf("%hu", &choice);
 		 }
-		} else {
+		} else { // temporary way to validate a choice //
 		if(choice == 1){
 		   stacknode* del = cachePtr->bottom;
-		   switch(del->value.tag){
-			   case 0: 
-			   case 1:
-			   case 2: 
-			   case 3:
+		   switch(del->value->tag){
+			   case TYPE_CHAR: 
+			   case TYPE_SHORT:
+			   case TYPE_INT: 
+			   case TYPE_DOUBLE:
 			       break;
-			   case 4:
-				   free(del->value.type.string);
-			       del->value.type.string = NULL; 
+			   case TYPE_STRING:
+				   free(del->value->type->string);
+			       del->value->type->string = NULL; 
 			       break;		
 			}
-		free(del);
-		del = NULL;
-		cachePtr->nodes_counter--;
-		set_cache_bottom(cachePtr); 	
+		    free(del);
+		    del = NULL;
+		    cachePtr->nodes_counter--;
+		    set_cache_bottom(cachePtr); 	
 	} else {
 		fprintf(stdout,"Ok the cache will remain the same...\n");
 		}
@@ -652,9 +659,11 @@ void set_cache_bottom(Cache* cachePtr){
  *  the other foos that I wrote for the same task
  *
  *  Need to fix bugs in string handling, and in double number checking 
+ *  I think to have fixed many of the bugs in string management, but need to check that
+ *  many other times to be completely sure 
  *
- *
- *
+ * FIX inside manage_cache_fullness():
+ * -Need to protect in a decent way the input handling in this foo
  * */
 
 
