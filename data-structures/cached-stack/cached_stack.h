@@ -1,4 +1,4 @@
-#define CACHESIZE 100
+#define CACHESIZE 1
 #include <stdlib.h>
 #include<stdbool.h>
 typedef enum types_tag {
@@ -18,12 +18,12 @@ typedef union {
 }types;
 
 typedef struct tagged_type {
-	types* type; 
+	types type; 
 	tags_t tag;
 }type_t;
 
 typedef struct stacknode {
-  	type_t* value; 
+  	type_t value; 
 	struct stacknode* nextNode; 
 }stacknode;
 
@@ -69,8 +69,8 @@ bool pop(Stack* stackPtr, Cache* cachePtr);
 
 /*=============== Cache ================ */
 
-void push_back(Cache* cachePtr,type_t* item);
-void manage_cache_fullness(Cache* cachePtr,type_t* item); 
+void push_back(Cache* cachePtr,type_t item);
+void manage_cache_fullness(Cache* cachePtr,type_t item); 
 void set_cache_bottom(Cache* cachePtr);
 
 

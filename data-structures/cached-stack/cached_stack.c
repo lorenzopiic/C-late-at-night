@@ -54,8 +54,8 @@ main(void)
 			fprintf(stderr,"\nPlease, enter a number >>> ");
         	continue;
       	}
-        // 3 is used to end the program // 
-		if(instructions_choice == 3 ) { break; }
+        // 5 is used to end the program // 
+		if(instructions_choice == 5 ) { break; }
       
 	switch (instructions_choice) {
         case 1:
@@ -119,7 +119,9 @@ void main_loop_instructions(void) {
     printf("Enter your choice:\n");
     printf("1 to push an element into the stack\n");
     printf("2 to pop an element from the stack\n");
-    printf("3 to end the program\n");
+    printf("3 to see inspect the status of the data structures\n");
+    printf("4 to clear the cache\n");  
+    printf("5 to end the program\n");
 }
 
 void push_options(void){
@@ -365,7 +367,7 @@ bool check_input_string(char** target){
 */
  
 /* 
- So we have to fix the problem that fgets() stores th newline onto the buffer
+ So we have to fix the problem that fgets() stores the newline onto the buffer
     
      0 1 2 3 4  5  6
     |h|e|l|l|o|\n|\0|    
@@ -394,7 +396,7 @@ bool check_input_string(char** target){
 type_t* allocate_short(short* sh) {
 	type_t* ret = malloc(sizeof(*ret));
 	if(ret != NULL){
-		ret->type->short_num = *sh; 
+		ret->type.short_num = *sh; 
 		ret->tag = TYPE_SHORT; 
 	} else {
 		perror("Allocation Error");
@@ -406,7 +408,7 @@ type_t* allocate_short(short* sh) {
 type_t* allocate_char(char* ch) {
 	type_t* ret = malloc(sizeof(*ret));
 	if(ret != NULL){
-		ret->type->char_num = *ch;
+		ret->type.char_num = *ch;
 		ret->tag = TYPE_CHAR;
 	} else {
 		perror("Allocation Error");
@@ -418,7 +420,7 @@ type_t* allocate_char(char* ch) {
 type_t* allocate_int(int* integer){
 	type_t * ret = malloc(sizeof(*ret));
 	if(ret != NULL){
-		ret->type->int_num = *integer;
+		ret->type.int_num = *integer;
 		ret->tag = TYPE_INT;
 	} else{
 		perror("Allocation error");
@@ -430,7 +432,7 @@ type_t* allocate_int(int* integer){
 type_t * allocate_double(double* doub){
 	type_t * ret = malloc(sizeof(*ret));
 	if(ret != NULL){
-		ret->type->double_num = *doub;
+		ret->type.double_num = *doub;
 		ret->tag = TYPE_DOUBLE;
 	} else {
 		perror("Allocation error...");
@@ -462,7 +464,7 @@ type_t* allocate_string(char* src_string){
 	   	if(dest_string != NULL){
 			strncpy(dest_string,src_string,len_counter);
 			ret->tag = TYPE_STRING;
-			ret->type->string = dest_string;
+			ret->type.string = dest_string;
 			} else {
 				perror("Allocation error...");
 				free(ret);
@@ -481,23 +483,23 @@ bool push(Stack* stackPtr, type_t* item){
 			case TYPE_SHORT: 
 			case TYPE_INT: 
 			case TYPE_DOUBLE:
-			   newNode->value->type = item->type;
-               newNode->value->tag = item->tag;	
+			   newNode->value.type = item->type;
+               newNode->value.tag = item->tag;	
 			   break;
 			case TYPE_STRING: 
 			   #ifdef DEBUG
                 printf("\nDEBUG case TYPE_STRING inside push()\n"
-                ">>> strlen(item->type->string) : %d\n" ,strlen(item->type->string)); 
+                ">>> strlen(item->type.string) : %d\n" ,strlen(item->type.string)); 
                 #endif
-                 char* temp = malloc(strlen(item->type->string));
+                 char* temp = malloc(strlen(item->type.string));
 			   if(temp != NULL) {
-			   	strncpy(temp, item->type->string, strlen(item->type->string));
-			   	newNode->value->tag = item->tag;
-			  	newNode->value->type->string = temp;
+			   	strncpy(temp, item->type.string, strlen(item->type.string));
+			   	newNode->value.tag = item->tag;
+			  	newNode->value.type.string = temp;
                 #ifdef DEBUG
                 printf("\nDEBUG case TYPE_STRING's newNode allocation inside push()\n"
                        ">>> printing newNode->value.type.string : %s\n",
-                        newNode->value->type->string); 
+                        newNode->value.type.string); 
                 #endif
 			} else {
 				perror("Allocation Error...");
@@ -538,7 +540,7 @@ bool pop(Stack* stackPtr, Cache* cachePtr){
 	}else{
 		manage_cache_fullness(cachePtr,stackPtr->head->value); 
 	}
-	switch(stackPtr->head->value->tag){
+	switch(stackPtr->head->value.tag){
 		case TYPE_CHAR: 
 		case TYPE_SHORT: 
 		case TYPE_INT: 
@@ -549,8 +551,8 @@ bool pop(Stack* stackPtr, Cache* cachePtr){
 			break;
 		case TYPE_STRING:
 			stackPtr->head = stackPtr->head->nextNode;
-			free(temp->value->type->string);
-			temp->value->type->string = NULL;
+			free(temp->value.type.string);
+			temp->value.type.string = NULL;
 			free(temp);
 			temp = NULL; 
 			break;		
@@ -558,21 +560,24 @@ bool pop(Stack* stackPtr, Cache* cachePtr){
 	stackPtr->nodes_counter--;
 }
 
-void push_back(Cache* cachePtr,type_t* item){
+void push_back(Cache* cachePtr,type_t item){
 	stacknode* newNode = malloc(sizeof(*newNode));
 	if(newNode != NULL){
 		newNode->nextNode = NULL; 
-		switch(item->tag) {
+		switch(item.tag) {
 			case TYPE_CHAR: 
 			case TYPE_SHORT: 
 			case TYPE_INT: 
 			case TYPE_DOUBLE:
-			   newNode->value = item;
+			   newNode->value.tag = item.tag;
+               newNode->value.type = item.type; 
 			   break;
 			case TYPE_STRING: 
-                type_t * temp = allocate_string(item->type->string);
+               char* temp = malloc(strlen(item.type.string));
 			   if(temp != NULL) {
-		        newNode->value = temp; 	
+			   	strncpy(temp, item.type.string, strlen(item.type.string));
+			   	newNode->value.tag = item.tag;
+			  	newNode->value.type.string = temp;
             } else {
 				perror("Allocation Error...");
 			   	free(newNode);
@@ -598,7 +603,7 @@ void push_back(Cache* cachePtr,type_t* item){
 	}
 }
 
-void manage_cache_fullness(Cache* cachePtr,type_t* item){
+void manage_cache_fullness(Cache* cachePtr,type_t item){
 		printf("Warning! The cache memory is full!\n"
 				"Using it will override the last pushed information\n"
 				"Do you want to use it anyway?\n"
@@ -614,15 +619,15 @@ void manage_cache_fullness(Cache* cachePtr,type_t* item){
 		} else { // temporary way to validate a choice //
 		if(choice == 1){
 		   stacknode* del = cachePtr->bottom;
-		   switch(del->value->tag){
+		   switch(del->value.tag){
 			   case TYPE_CHAR: 
 			   case TYPE_SHORT:
 			   case TYPE_INT: 
 			   case TYPE_DOUBLE:
 			       break;
 			   case TYPE_STRING:
-				   free(del->value->type->string);
-			       del->value->type->string = NULL; 
+				   free(del->value.type.string);
+			       del->value.type.string = NULL; 
 			       break;		
 			}
 		    free(del);
