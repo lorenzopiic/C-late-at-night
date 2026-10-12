@@ -12,53 +12,45 @@
 #include"cached_stack.h"
 
  #define DEBUG
-
-int 
-main(void) 
+int
+main(void)
 {
     Stack* STACK = malloc(sizeof *STACK);
     if(STACK == NULL){
         perror("Allocation Error\n");
-        return EXIT_FAILURE; 
-} 
-	Cache* CACHE = malloc(sizeof *CACHE);
+        return EXIT_FAILURE;
+}
+        Cache* CACHE = malloc(sizeof *CACHE);
     if(CACHE == NULL){
         perror("Allocation Error\n");
-        return EXIT_FAILURE; 
+        return EXIT_FAILURE;
     }
 
-/* 
- 
+/*
+
    "instructions_choice" is used for them main menu management to handle the first step of the program
 
    "push_options_choice" is used to manage the choice of data type to push
-   
-*/
-	int instructions_choice; 	
-	int push_options_choice; 
-
-    
-	main_loop_instructions(); /* Dipslays the general menu of the progam */
-	printf(">>> ");
-
-    bool mainloop = 1; 
-/*
-
- This is the main loop that controls all the program 
 
 */
-    while(mainloop){ 
-		/* See check_input */
-		
-    if(!check_input(&instructions_choice)){
-			fprintf(stderr,"\nPlease, enter a number >>> ");
-        	continue;
-      	}
-        // 5 is used to end the program // 
-		if(instructions_choice == 5 ) { break; }
-      
-	switch (instructions_choice) {
+        int instructions_choice;
+        int push_options_choice;
+
+
+        main_loop_instructions(); /* Dipslays the general menu of the progam */
+        printf(">>> ");
+
+        while(1){
+                /* See check_input */
+                if(!check_input(&instructions_choice)){
+                        fprintf(stderr,"\nPlease, enter a number >>> ");
+                continue;
+        }
+                if(instructions_choice == 5 ) { break; }
+
+                switch (instructions_choice) {
         case 1:
+{
              print_divider();
              push_options(); /* Displays the data types supported by the data structure */
              printf(">>> ");
@@ -67,73 +59,102 @@ main(void)
                 if (!check_input(&push_options_choice)) {
                     fprintf(stderr, "\nError! You entered characters instead of a number!\n");
                 } else if (!check_push_options_choice(&push_options_choice)) {
-                    // push option not betweeen 1-5 // 
-					fprintf(stderr, "\nError! You entered an invalid choice!\n");
+                    // not betweeen 1-5 //
+                                        fprintf(stderr, "\nError! You entered an invalid choice!\n");
                 } else {
-                    break; 
+                    break;
                 }
                 print_divider();
                 push_options();
                 fprintf(stdout,"\nEnter a valid choice now >>> ");
             }
-			// Ok, now we are sure that the choice of what to push is a number between 1-5 //
-            type_t* data = manage_push_options_choice(&push_options_choice); 
+                        // Ok, now we are sure that the choice of what to push is a number between 1-5 //
+            type_t* data = manage_push_options_choice(&push_options_choice);
 
 /* DESCRIPTION:
-   
+
    "type_t"
-   
+
    type_t: This struct represents the data type abstraction that we want to push into the data structure;
    essentially inside it there is:
-  
+
     - a "union" containing the data types that I have prepared for the program and then,
     - an "enum" that reports the tags of the various types
-   
+
    so that we can make the wrappers that actually allocate the data in the heap work
 
 */
       if (!push(STACK, data)){
-        fprintf(stderr,"Error! Something went wrong while trying to push an element onto the stack...\n");
+        fprintf(stderr,"Error! Something went wrong...\n");
     }
            break;
+} // END case 1 //
         case 2:
-        if(pop(STACK,CACHE)){
-            fprintf(stdout,"An element was successully popped from the stack!\n");         
-    }
+{
+        if(pop(STACK,CACHE) == true){
+            fprintf(stdout,"\nAn element was successully popped from the stack!\n");
+                        //fprintf(stdout,"Number of stack's elements:%ld\n",STACK->nodes_counter);
+                        print_divider();
+                } else {
+                        // STACK is empty //
+                        goto NEWCHOICE;
+                }
             break;
+} //END case 2 //
+        case 3:
+{
+                        display_status(STACK, CACHE);
+                        print_divider();
+                        break;
+}
         default:
             printf("\nError! Invalid choice...\n\n");
             main_loop_instructions();
             break;
         }
-            fprintf(stdout,"Insert new choice >>> ");
+NEWCHOICE:
+            fprintf(stdout,"\nInsert new choice >>> ");
             fflush(stdout);
-    } // end while loop() // 
+    } // end while loop() //
     puts("Program ended!");
 
         return 0;
 }
 
-
 void main_loop_instructions(void) {
-    printf("Enter your choice:\n");
+    printf("\nEnter your choice:\n");
     printf("1 to push an element into the stack\n");
     printf("2 to pop an element from the stack\n");
-    printf("3 to see inspect the status of the data structures\n");
-    printf("4 to clear the cache\n");  
+    printf("3 to display the number of elements of the data structures\n");
+    printf("4 to see advanced settings menu\n");
     printf("5 to end the program\n");
 }
+
 
 void push_options(void){
 	printf("What kind of data do you want to push?\n\n");
 	printf("1 >>> char\n2 >>> short\n3 >>> int\n4 >>> double\n5 >>> string\n");
 }
-void print_divider(void){ fprintf(stdout,"\n\n/* =========================================== */\n\n"); }
+void print_divider(void){ fprintf(stdout,"\n\n/* ===================================================================== */\n\n"); }
 
 
 void clean_buffer(void){
         int c;
         while((c = getchar())!= '\n' && c != EOF);
+}
+
+void display_status(Stack* STACK,Cache* CACHE){
+	
+	if(STACK->nodes_counter == 0){
+		fprintf(stdout,"\nStack is empty...\n"); 
+	} else {
+		fprintf(stdout,"\nStack's elements >>> %ld\n", STACK->nodes_counter);
+	 }
+	if(CACHE->nodes_counter == 0){
+		fprintf(stdout,"\nCache is empty...\n");
+	} else {
+		fprintf(stdout,"Cache's elements >>> %ld\n", CACHE->nodes_counter);
+	}	
 }
 
 /* DESCRIPTION:
@@ -282,6 +303,7 @@ type_t* manage_push_options_choice(int* option){
 	print_divider(); 	
 	return ret;
 }
+
 bool check_input_short(short* target){
 
 	char buffer[1200];
@@ -353,7 +375,7 @@ bool check_input_string(char** target){
 
 	#ifdef DEBUG
         printf("\nDEBUG inside check_input_string()\n>>> buffer read form stdin: %s\n",buffer); 
-        printf("\nDEBUG inside check_input_string()\n>>> buffer_len %d\n",buffer_len);
+        printf("\nDEBUG inside check_input_string()\n>>> buffer_len %ld\n",buffer_len);
     #endif
 
 /*
@@ -489,7 +511,7 @@ bool push(Stack* stackPtr, type_t* item){
 			case TYPE_STRING: 
 			   #ifdef DEBUG
                 printf("\nDEBUG case TYPE_STRING inside push()\n"
-                ">>> strlen(item->type.string) : %d\n" ,strlen(item->type.string)); 
+                ">>> strlen(item->type.string) : %ld\n" ,strlen(item->type.string)); 
                 #endif
                  char* temp = malloc(strlen(item->type.string));
 			   if(temp != NULL) {
@@ -529,7 +551,7 @@ bool push(Stack* stackPtr, type_t* item){
 bool pop(Stack* stackPtr, Cache* cachePtr){
 	if(stackPtr->head == NULL){
 	  	fprintf(stderr,"Stack is empty...\n"); 
-		exit(EXIT_FAILURE); 
+		return false;
 	}	
     
     // We save a reference of the current head of the stack // 
@@ -558,6 +580,7 @@ bool pop(Stack* stackPtr, Cache* cachePtr){
 			break;		
 	}
 	stackPtr->nodes_counter--;
+	return true; 
 }
 
 void push_back(Cache* cachePtr,type_t item){

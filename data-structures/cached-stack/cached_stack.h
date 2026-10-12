@@ -44,17 +44,20 @@ void main_loop_instructions(void);
 void push_options(void); 
 void clean_buffer(void);
 bool check_input(int* target);
+void display_status(Stack* STACK, Cache* CACHE);
 void print_divider(void);
 
 bool check_push_options_choice(int* choice); 
 type_t* manage_push_options_choice(int* option);
+
+/* ============== Input Checking ===================== */
 
 bool  check_input_short(short* target);
 bool  check_input_int(int* target);
 bool  check_input_double(double* target);
 bool  check_input_string(char** target);
 
-/*============== Dynamic Allocation ================ */ 
+/* ============== Dynamic Allocation ================ */ 
 
 type_t* allocate_short(short* sh);
 type_t* allocate_char(char* ch);
@@ -62,7 +65,7 @@ type_t* allocate_int(int* integer);
 type_t* allocate_double(double* doub);
 type_t* allocate_string(char* src_strng);
 
-/*=============== Stack ================ */
+/* =============== Stack ================ */
 
 bool push(Stack* stackPtr, type_t* value);
 bool pop(Stack* stackPtr, Cache* cachePtr);
