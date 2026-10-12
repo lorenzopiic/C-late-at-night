@@ -106,8 +106,14 @@ main(void)
                         display_status(STACK, CACHE);
                         print_divider();
                         break;
-}
-        default:
+} // END case 3 //
+		case 4:
+{	
+		advanced_settings(); 
+
+
+
+}        default:
             printf("\nError! Invalid choice...\n\n");
             main_loop_instructions();
             break;
@@ -136,7 +142,19 @@ void push_options(void){
 	printf("1 >>> char\n2 >>> short\n3 >>> int\n4 >>> double\n5 >>> string\n");
 }
 void print_divider(void){ fprintf(stdout,"\n\n/* ===================================================================== */\n\n"); }
-
+void advanced_settings(void){
+    printf("\nEnter your choice:\n");
+    printf("1 to see the element on top of the  stack\n");
+    printf("2 to see the element at the bottom of the stack\n");
+    printf("3 to see the element on top of the  cache\n");
+    printf("4 to see the element at the bottom of the cache\n");
+    printf("5 to print n element of the stack\n");
+    printf("6 to print n element of the cache\n");
+    printf("7 to delete n element from the stack\n");
+    printf("8 to delete n element from the cache\n");
+    printf("9 to clear all the stack\n");
+    printf("10 to clear all the the cache\n");
+}
 
 void clean_buffer(void){
         int c;
@@ -165,7 +183,7 @@ void display_status(Stack* STACK,Cache* CACHE){
   for the program to execute. If the user enters "characters" or "floating-point numbers", the function 
   returns an error, and the loop prompts the user to enter a valid choice again.
  
-  */
+ */
 bool check_input(int* target) {
   
   	char buffer[128];

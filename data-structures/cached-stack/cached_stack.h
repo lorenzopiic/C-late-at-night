@@ -38,24 +38,24 @@ typedef struct Cache {
 	size_t nodes_counter;
 }Cache;
 
-//======================================//
+// =================== Menus ==================== //
 
 void main_loop_instructions(void);
+void advanced_settings(void);
 void push_options(void); 
-void clean_buffer(void);
-bool check_input(int* target);
-void display_status(Stack* STACK, Cache* CACHE);
 void print_divider(void);
 
-bool check_push_options_choice(int* choice); 
-type_t* manage_push_options_choice(int* option);
+/* ===================== Utils ======================== */ 
+
+void clean_buffer(void);
 
 /* ============== Input Checking ===================== */
 
-bool  check_input_short(short* target);
-bool  check_input_int(int* target);
-bool  check_input_double(double* target);
-bool  check_input_string(char** target);
+bool check_input(int* target);
+bool check_input_short(short* target);
+bool check_input_int(int* target);
+bool check_input_double(double* target);
+bool check_input_string(char** target);
 
 /* ============== Dynamic Allocation ================ */ 
 
@@ -66,6 +66,9 @@ type_t* allocate_double(double* doub);
 type_t* allocate_string(char* src_strng);
 
 /* =============== Stack ================ */
+
+bool check_push_options_choice(int* choice); 
+type_t* manage_push_options_choice(int* option);
 
 bool push(Stack* stackPtr, type_t* value);
 bool pop(Stack* stackPtr, Cache* cachePtr);
@@ -79,3 +82,4 @@ void set_cache_bottom(Cache* cachePtr);
 
 //======================================//
 
+void display_status(Stack* STACK, Cache* CACHE);
