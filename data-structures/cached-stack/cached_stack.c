@@ -32,10 +32,11 @@ main(void)
 
    "push_options_choice" is used to manage the choice of data type to push
 
+   "advanced_setting_choice" is used to select which particular action to perform, given the provided set 
 */
         int instructions_choice;
         int push_options_choice;
-
+		int advanced_settings_choice; 
 
         main_loop_instructions(); /* Dipslays the general menu of the progam */
         printf(">>> ");
@@ -110,10 +111,23 @@ main(void)
 		case 4:
 {	
 		advanced_settings(); 
-
-
-
-}        default:
+		print_divider();
+	   	fprintf(stdout,">>> "); 	
+        while (1) {
+			if (!check_input(&advanced_settings_choice)) {
+				fprintf(stderr, "\nError! You entered characters instead of a number!\n");
+                	} else if (!check_push_options_choice(&advanced_settings_choice)) {
+                    // not betweeen 1-10//
+                      fprintf(stderr, "\nError! You entered an invalid choice!\n");
+                } else {
+                    break;
+				}
+                print_divider();
+                advanced_settings(); 
+                fprintf(stdout,"\nEnter a valid choice now >>> "); 
+		}
+} // END case 4 //        
+	default:
             printf("\nError! Invalid choice...\n\n");
             main_loop_instructions();
             break;
@@ -186,7 +200,7 @@ void display_status(Stack* STACK,Cache* CACHE){
  */
 bool check_input(int* target) {
   
-  	char buffer[128];
+  	char buffer[3000];
     if (fgets(buffer, sizeof(buffer), stdin) == NULL) { return false; }
 
     char* endptr;
@@ -219,6 +233,23 @@ bool check_push_options_choice(int* choice){
 			return true; 
 		default:
 			return false; 
+	}
+}
+
+/*  DESCRIPTION: 
+   
+    "check_advanced_settings_choice()"
+   
+    This function checks whether the integer entered by the user is between 1 and 10; if this check fails, the foo
+    returns an error and this time the loop prompts you to enter a valid option until the latter is provided.
+
+
+*/
+bool check_advanced_settings_choice(int* choice) {
+	switch(*choice){
+		case 1:	case 2: case 3:	case 4:	case 5: 
+		case 6: case 7: case 8: case 9: case 10: return true;
+   		default: return false;
 	}
 }
 

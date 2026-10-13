@@ -51,6 +51,8 @@ void clean_buffer(void);
 
 /* ============== Input Checking ===================== */
 
+bool check_advanced_settings_choice(int* choice); 
+
 bool check_input(int* target);
 bool check_input_short(short* target);
 bool check_input_int(int* target);
