@@ -126,6 +126,7 @@ main(void)
                 advanced_settings(); 
                 fprintf(stdout,"\nEnter a valid choice now >>> "); 
 		}
+
 } // END case 4 //        
 	default:
             printf("\nError! Invalid choice...\n\n");
@@ -261,6 +262,55 @@ bool check_advanced_settings_choice(int* choice) {
   and delegates memory allocation to the corresponding type-specific function.
 
 */
+
+bool manage_advanced_settings_choice(int*option){
+
+    switch(*option){
+    case 1:
+    {
+        break;
+    }
+    case 2:
+    {
+        break;
+    }
+    case 3:
+    {
+        break;    
+    }
+    case 4:
+    {
+        break;
+    }
+    case 5:
+    {
+        break;
+    }
+    case 6:
+    {
+        break;
+    }
+    case 7:
+    {
+        break;
+    } 
+    case 8: 
+    {
+        break;
+    }
+    case 9: 
+    {
+        break;
+    }  
+  case 10: 
+    {
+        break;
+    }
+
+ } // END SWITCH // // END SWITCH //  
+
+
+}
 type_t* manage_push_options_choice(int* option){
 		type_t* ret = NULL; 
 		switch(*option){

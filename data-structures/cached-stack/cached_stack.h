@@ -51,6 +51,7 @@ void clean_buffer(void);
 
 /* ============== Input Checking ===================== */
 
+bool check_push_options_choice(int* choice); 
 bool check_advanced_settings_choice(int* choice); 
 
 bool check_input(int* target);
@@ -58,7 +59,10 @@ bool check_input_short(short* target);
 bool check_input_int(int* target);
 bool check_input_double(double* target);
 bool check_input_string(char** target);
+/*================= Choice Management ================*/
 
+type_t* manage_push_options_choice(int* option);
+bool manage_advanced_settings_choice(int*option);
 /* ============== Dynamic Allocation ================ */ 
 
 type_t* allocate_short(short* sh);
@@ -68,10 +72,6 @@ type_t* allocate_double(double* doub);
 type_t* allocate_string(char* src_strng);
 
 /* =============== Stack ================ */
-
-bool check_push_options_choice(int* choice); 
-type_t* manage_push_options_choice(int* option);
-
 bool push(Stack* stackPtr, type_t* value);
 bool pop(Stack* stackPtr, Cache* cachePtr);
 
