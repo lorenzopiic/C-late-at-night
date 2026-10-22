@@ -52,7 +52,12 @@ void clean_buffer(void);
 /* ============== Input Checking ===================== */
 
 bool check_push_options_choice(int* choice); 
-bool check_advanced_settings_choice(int* choice); 
+bool check_advanced_settings_choice
+(
+		Stack* stackPtr,
+	  	Cache* cachePtr,
+	   	int* choice
+); 
 
 bool check_input(int* target);
 bool check_input_short(short* target);
@@ -75,13 +80,19 @@ type_t* allocate_string(char* src_strng);
 bool push(Stack* stackPtr, type_t* value);
 bool pop(Stack* stackPtr, Cache* cachePtr);
 
+bool show_stack_top(Stack* stackPtr); 
+bool show_stack_bottom(Stack* stackPtr); 
+
 /*=============== Cache ================ */
 
 void push_back(Cache* cachePtr,type_t item);
 void manage_cache_fullness(Cache* cachePtr,type_t item); 
 void set_cache_bottom(Cache* cachePtr);
 
+bool show_cache_top(Cache* cachePtr); 
+bool show_cache_bottom(Cache* cachePtr); 
+
 
 //======================================//
 
-void display_status(Stack* STACK, Cache* CACHE);
+void display_status(Stack* STACK, Cache* cachePtr);

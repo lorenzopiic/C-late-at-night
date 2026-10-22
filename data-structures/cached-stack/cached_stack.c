@@ -32,7 +32,7 @@ main(void)
 
    "push_options_choice" is used to manage the choice of data type to push
 
-   "advanced_setting_choice" is used to select which particular action to perform, given the provided set 
+   "advanced_settings_choice" is used to select which particular action to perform, given the provided set 
 */
         int instructions_choice;
         int push_options_choice;
@@ -120,11 +120,15 @@ main(void)
                     // not betweeen 1-10//
                       fprintf(stderr, "\nError! You entered an invalid choice!\n");
                 } else {
+
                     break;
 				}
                 print_divider();
                 advanced_settings(); 
                 fprintf(stdout,"\nEnter a valid choice now >>> "); 
+		}
+		if(manage_advanced_settings_choice(STACK,CACHE,&advanced_settings_choice)){
+			break;
 		}
 
 } // END case 4 //        
@@ -176,7 +180,7 @@ void clean_buffer(void){
         while((c = getchar())!= '\n' && c != EOF);
 }
 
-void display_status(Stack* STACK,Cache* CACHE){
+void display_status(Stack* STACK,Cache* cachePtr){
 	
 	if(STACK->nodes_counter == 0){
 		fprintf(stdout,"\nStack is empty...\n"); 
@@ -263,23 +267,27 @@ bool check_advanced_settings_choice(int* choice) {
 
 */
 
-bool manage_advanced_settings_choice(int*option){
+bool manage_advanced_settings_choice(Stack* stackPtr, Cache* cachePtr,int*option){
 
     switch(*option){
     case 1:
     {
+		show_stack_top(stackPtr);
         break;
     }
     case 2:
     {
+		show_stack_bottom();
         break;
     }
     case 3:
     {
+		show_cache_top();
         break;    
     }
     case 4:
     {
+		show_cache_bottom();
         break;
     }
     case 5:
@@ -761,6 +769,30 @@ void manage_cache_fullness(Cache* cachePtr,type_t item){
 		}
 	}
 }
+
+
+bool show_stack_top(Stack* stackPtr){
+
+	if(stackPtr == NULL){
+		fprintf(stderr,"Stack is empty...\n");
+		return false; 
+	}
+type_t* top = &(stackPtr->head.value);
+switch(stackPtr->head->value.tag){
+	case TYPE_CHAR:
+		fprintf(stdout,"\nElemnt on top of the stack is >>> %c\n", 
+				top->type.char_num);
+	   			break; 	
+	case TYPE_SHORT:
+	case TYPE_INT:
+	case TYPE_DOUBLE:
+	case TYPE_STRING:
+} 
+
+return true; 
+} 
+
+
 
 void set_cache_bottom(Cache* cachePtr){
 	stacknode* current = cachePtr->top;
