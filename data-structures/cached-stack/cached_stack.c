@@ -11,7 +11,7 @@
 #include<errno.h>
 #include"cached_stack.h"
 
- #define DEBUG
+//#define DEBUG
 int
 main(void)
 {
@@ -19,7 +19,7 @@ main(void)
     if(STACK == NULL){
         perror("Allocation Error\n");
         return EXIT_FAILURE;
-}
+	}
         Cache* CACHE = malloc(sizeof *CACHE);
     if(CACHE == NULL){
         perror("Allocation Error\n");
@@ -41,16 +41,17 @@ main(void)
         main_loop_instructions(); /* Dipslays the general menu of the progam */
         printf(">>> ");
 
-        while(1){
-                /* See check_input */
-                if(!check_input(&instructions_choice)){
-                        fprintf(stderr,"\nPlease, enter a number >>> ");
-                continue;
-        }
-                if(instructions_choice == 5 ) { break; }
-
-                switch (instructions_choice) {
-        case 1:
+ /* main LOOP */
+while(1){
+      /* See check_input */
+	if(!check_input(&instructions_choice)){
+	   	fprintf(stderr,"\nPlease, enter a number >>> ");
+        continue;
+	}
+	if(instructions_choice == 5 ) { break; }
+	
+	switch (instructions_choice) {
+		case 1:
 {
              print_divider();
              push_options(); /* Displays the data types supported by the data structure */
@@ -61,7 +62,7 @@ main(void)
                     fprintf(stderr, "\nError! You entered characters instead of a number!\n");
                 } else if (!check_push_options_choice(&push_options_choice)) {
                     // not betweeen 1-5 //
-                                        fprintf(stderr, "\nError! You entered an invalid choice!\n");
+					fprintf(stderr, "\nError! You entered an invalid choice!\n");
                 } else {
                     break;
                 }
@@ -116,7 +117,7 @@ main(void)
         while (1) {
 			if (!check_input(&advanced_settings_choice)) {
 				fprintf(stderr, "\nError! You entered characters instead of a number!\n");
-                	} else if (!check_push_options_choice(&advanced_settings_choice)) {
+                	} else if (!check_advanced_settings_choice(&advanced_settings_choice)){
                     // not betweeen 1-10//
                       fprintf(stderr, "\nError! You entered an invalid choice!\n");
                 } else {
@@ -129,7 +130,9 @@ main(void)
 		}
 		if(manage_advanced_settings_choice(STACK,CACHE,&advanced_settings_choice)){
 			break;
-		}
+	} else { // MANAGE THIS SITUATION
+
+   			}
 
 } // END case 4 //        
 	default:
@@ -144,7 +147,7 @@ NEWCHOICE:
     puts("Program ended!");
 
         return 0;
-}
+} // END MAIN //
 
 void main_loop_instructions(void) {
     printf("\nEnter your choice:\n");
@@ -180,17 +183,17 @@ void clean_buffer(void){
         while((c = getchar())!= '\n' && c != EOF);
 }
 
-void display_status(Stack* STACK,Cache* cachePtr){
+void display_status(Stack* stackPtr,Cache* cachePtr){
 	
-	if(STACK->nodes_counter == 0){
+	if(stackPtr->nodes_counter == 0){
 		fprintf(stdout,"\nStack is empty...\n"); 
 	} else {
-		fprintf(stdout,"\nStack's elements >>> %ld\n", STACK->nodes_counter);
+		fprintf(stdout,"\nStack's elements >>> %ld\n", stackPtr->nodes_counter);
 	 }
-	if(CACHE->nodes_counter == 0){
+	if(cachePtr->nodes_counter == 0){
 		fprintf(stdout,"\nCache is empty...\n");
 	} else {
-		fprintf(stdout,"Cache's elements >>> %ld\n", CACHE->nodes_counter);
+		fprintf(stdout,"Cache's elements >>> %ld\n", cachePtr->nodes_counter);
 	}	
 }
 
@@ -272,22 +275,26 @@ bool manage_advanced_settings_choice(Stack* stackPtr, Cache* cachePtr,int*option
     switch(*option){
     case 1:
     {
-		show_stack_top(stackPtr);
+		if(show_stack_top(stackPtr)){
+		
+		} else {
+			return false; 
+		}
         break;
     }
     case 2:
     {
-		show_stack_bottom();
+		show_stack_bottom(stackPtr);
         break;
     }
     case 3:
     {
-		show_cache_top();
+		show_cache_top(cachePtr);
         break;    
     }
     case 4:
     {
-		show_cache_bottom();
+		show_cache_bottom(cachePtr);
         break;
     }
     case 5:
@@ -314,11 +321,9 @@ bool manage_advanced_settings_choice(Stack* stackPtr, Cache* cachePtr,int*option
     {
         break;
     }
-
- } // END SWITCH // // END SWITCH //  
-
-
+ } // END SWITCH //
 }
+
 type_t* manage_push_options_choice(int* option){
 		type_t* ret = NULL; 
 		switch(*option){
@@ -589,7 +594,7 @@ type_t* allocate_string(char* src_string){
 
 	type_t* ret = malloc(sizeof(*ret));
 	if(ret != NULL){
-		char* dest_string = malloc(sizeof(len_counter));
+		char* dest_string = malloc(len_counter);
 	   	if(dest_string != NULL){
 			strncpy(dest_string,src_string,len_counter);
 			ret->tag = TYPE_STRING;
@@ -770,14 +775,15 @@ void manage_cache_fullness(Cache* cachePtr,type_t item){
 	}
 }
 
-
+/*
 bool show_stack_top(Stack* stackPtr){
 
 	if(stackPtr == NULL){
 		fprintf(stderr,"Stack is empty...\n");
 		return false; 
 	}
-type_t* top = &(stackPtr->head.value);
+type_t* top = &(stackPtr->head->value);
+
 switch(stackPtr->head->value.tag){
 	case TYPE_CHAR:
 		fprintf(stdout,"\nElemnt on top of the stack is >>> %c\n", 
@@ -787,10 +793,15 @@ switch(stackPtr->head->value.tag){
 	case TYPE_INT:
 	case TYPE_DOUBLE:
 	case TYPE_STRING:
-} 
-
+				break;
+		
+}
 return true; 
-} 
+}
+*/
+//bool show_stack_bottom(Stack* stackPtr);
+//bool show_cache_top(Cache* cachePtr);
+//bool show_cache_bottom(Cache* cachePtr);
 
 
 
@@ -807,9 +818,8 @@ void set_cache_bottom(Cache* cachePtr){
 	cachePtr->bottom->nextNode = NULL; 
 	}
 	previous = NULL; 
-	current  = NULL; 
+	current  = NULL;
 }
-
 
 
 /*======================= TO DO ===========================
@@ -824,12 +834,4 @@ void set_cache_bottom(Cache* cachePtr){
  * FIX inside manage_cache_fullness():
  * -Need to protect in a decent way the input handling in this foo
  * */
-
-
-
-
-
-
-
-
 
