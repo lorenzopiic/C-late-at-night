@@ -131,7 +131,8 @@ while(1){
 		if(manage_advanced_settings_choice(STACK,CACHE,&advanced_settings_choice)){
 			break;
 	} else { // MANAGE THIS SITUATION
-
+		fprintf(stderr,"\nSome error occurred using advanced settings...\n"); 
+		goto NEWCHOICE;
    			}
 
 } // END case 4 //        
@@ -274,14 +275,13 @@ bool manage_advanced_settings_choice(Stack* stackPtr, Cache* cachePtr,int*option
 
     switch(*option){
     case 1:
-    {
+{
 		if(show_stack_top(stackPtr)){
+			break;  
 		
-		} else {
-			return false; 
-		}
-        break;
-    }
+		} else { return false;  
+	}
+}
     case 2:
     {
 		show_stack_bottom(stackPtr);
@@ -775,11 +775,11 @@ void manage_cache_fullness(Cache* cachePtr,type_t item){
 	}
 }
 
-/*
+
 bool show_stack_top(Stack* stackPtr){
 
-	if(stackPtr == NULL){
-		fprintf(stderr,"Stack is empty...\n");
+	if(stackPtr->head == NULL){
+		fprintf(stderr,"Error trying to inspect the top of the Stack >>> Stack is empty...\n");
 		return false; 
 	}
 type_t* top = &(stackPtr->head->value);
@@ -787,21 +787,43 @@ type_t* top = &(stackPtr->head->value);
 switch(stackPtr->head->value.tag){
 	case TYPE_CHAR:
 		fprintf(stdout,"\nElemnt on top of the stack is >>> %c\n", 
-				top->type.char_num);
-	   			break; 	
+			top->type.char_num);
+		top = NULL; 
+		return true; 
+	
 	case TYPE_SHORT:
+		fprintf(stdout,"\nElemnt on top of the stack is >>> %d\n",
+			   top->type.short_num);
+		top = NULL; 
+		return true; 
+	
 	case TYPE_INT:
+		fprintf(stdout,"\nElemnt on top of the stack is >>> %d\n",
+				top->type.int_num);
+		top = NULL; 
+		return true; 
+	
 	case TYPE_DOUBLE:
-	case TYPE_STRING:
-				break;
+		fprintf(stdout,"\nElemnt on top of the stack is >>> %lf\n",
+				top->type.double_num);
+		top = NULL; 
+		return true; 		
+	
 		
+	case TYPE_STRING:
+		fprintf(stdout,"\nElement on top of the stack is >>> %s\n",
+				top->type.string); 
+		top = NULL; 
+		return true;		
+	
+	} // END SWITCH // 
+	top = NULL; 
+	return false;  // If here something went wrong // 
 }
-return true; 
-}
-*/
-//bool show_stack_bottom(Stack* stackPtr);
-//bool show_cache_top(Cache* cachePtr);
-//bool show_cache_bottom(Cache* cachePtr);
+
+bool show_stack_bottom(Stack* stackPtr){}
+bool show_cache_top(Cache* cachePtr){}
+bool show_cache_bottom(Cache* cachePtr){}
 
 
 
@@ -834,4 +856,5 @@ void set_cache_bottom(Cache* cachePtr){
  * FIX inside manage_cache_fullness():
  * -Need to protect in a decent way the input handling in this foo
  * */
+
 
