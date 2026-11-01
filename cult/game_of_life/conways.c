@@ -1,90 +1,108 @@
 #include<stdio.h>
 #include<unistd.h>
+#include<stdbool.h>
 #define COLS 15
 #define ROWS 10
 
 #define DEAD '.'
 #define ALIVE '*'
 
-
-void print_grid(char GRID[][COLS]);
-void set_grid(char GRID[][COLS], char STATE);
-char get_cell_state(char GRID[][COLS],int x, int y);
-void set_cell_state(char GRID[][COLS],int x,int y,char STATE); 
+//#define DEBUG
+void print_grid(char grid[][COLS]);
+void set_grid_state(char grid[][COLS], char state);
+char get_cell_state(char grid[][COLS],int x, int y);
+void set_cell_state(char grid[][COLS],int x,int y,char state); 
 void module(int*x, int* y);
 void clear(void);
 
 int main(void){
 
-	char GRID[ROWS][COLS]; 
+	char grid[ROWS][COLS]; 
 	
 	clear(); 
-	set_grid(GRID,DEAD);
-	print_grid(GRID);
+	set_grid_state(grid,DEAD);
+	print_grid(grid);
 	sleep(3); 
 	clear();	
-	fprintf(stdout,"Setting alive cell at x = 1 , y = 2\n"); 
-	set_cell_state(GRID,1,2,ALIVE); 
-	print_grid(GRID);
+	fprintf(stdout,"Setting alive cell at x = 1 , y = 2\n\n"); 
+	set_cell_state(grid,1,2,ALIVE); 
+	print_grid(grid);
 	sleep(3);
 	clear(); 
 	fprintf(stdout,"Ok, no we test the module foo\n"); 
 	sleep(3);
 	clear(); 
-	fprintf(stdout,"Setting alive cell at x = -3 , y = -1\n"); 
-	set_cell_state(GRID,-3,-1,ALIVE);
-	print_grid(GRID);
+	fprintf(stdout,"Setting alive cell at x = -3 , y = -1\n\n"); 
+	set_grid_state(grid,DEAD);
+	set_cell_state(grid,-3,-1,ALIVE);
+	print_grid(grid);
 	return 0; 
 }
 
 /* prints the grid */
 
-void print_grid(char GRID[][COLS]){
-
+void print_grid(char grid[][COLS]){
+	
+	printf("   "); 
+	
+	for(int n = 0; n<COLS;n++){
+		printf("%d   ",n);
+   	}
+	
+	printf("\n\n"); 
+	
 	for(int x = 0; x<ROWS;x++){
 			printf("%d  ",x); 
-		for(int y = 0; y<COLS; y++){
-			printf("%c",get_cell_state(GRID,x,y)); 
+	
+	for(int y = 0; y<COLS; y++){
+		if(y > 9){
+			printf(" "); 
 		}
-	printf("\n\n");
+		printf("%c   ",get_cell_state(grid,x,y)); 
+	}
+		
+		printf("\n\n");
 	}
 	printf("\n"); 
 }
 
-char get_cell_state(char GRID[][COLS],int x,int y){
+char get_cell_state(char grid[][COLS],int x,int y){
+	return grid[x][y];
+}
+void set_grid_state(char grid[][COLS], char state){
+    for(int y = 0; y < ROWS; y++)
+        for(int x = 0; x < COLS; x++)
+            set_cell_state(grid, x, y, state);
+}
+
+void set_cell_state(char grid [][COLS],int x, int y,char state){
 	module(&x,&y);
-	return GRID[x][y];
+	grid[x][y] = state;
 }
 
-void set_grid(char GRID[ROWS][COLS],char STATE){
-	for(int x=0; x<ROWS; x++){
-		for(int y=0; y<COLS; y++){
-			set_cell_state(GRID,x,y,STATE);
-		}
-	}	
-}
-void set_cell_state(char GRID [][COLS],int x, int y,char STATE){
-	module(&x,&y);
-	GRID[x][y] = STATE;
-}
+void module(int *x, int *y){
+    if(*x < 0){
+        *x = -*x;
+        *x = *x % COLS;      
+        *x = COLS - *x;
+    }
+    if(*y < 0){
+        *y = -*y;
+        *y = *y % ROWS;
+        *y = ROWS - *y;
+    }
 
-void module(int* x, int* y){
-	if (*x < 0){
-		*x = -(*x); 
-		*x = ROWS - *x;
-	}
-	if (*y < 0){
-		*y = -(*y);
-		*y = COLS - *y; 
-	}
+    if(*x >= COLS){ *x = *x % COLS; }   
+	if(*y >= ROWS){ *y = *y % ROWS; }
 
-	if(*x > ROWS){ *x = *x % ROWS; }
-	
-	if(*y > COLS){ *y = *y % COLS; }
+#ifdef DEBUG
 
+	fprintf(stdout,"\nDEBUG into module()\n*x = %d\n*y = %d\n",
+											*x,*y); 
+#endif
 }
 
 void clear(void){
-	printf("\033\[H\033[2J\033[3J"); 
+	printf("\033[H\033[2J\033[3J"); 
 
 }
