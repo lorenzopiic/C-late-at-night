@@ -274,22 +274,24 @@ bool check_advanced_settings_choice(int* choice) {
 bool manage_advanced_settings_choice(Stack* stackPtr, Cache* cachePtr,int*option){
 
     switch(*option){
-    case 1:
-{
+    case 1:{
 		if(show_stack_top(stackPtr)){
 			break;  
-		
-		} else { return false;  
+		} else { 
+			return false;  
 	}
+		break;
 }
-    case 2:
-    {
+    case 2:{
 		show_stack_bottom(stackPtr);
         break;
     }
-    case 3:
-    {
-		show_cache_top(cachePtr);
+    case 3: {
+		if(show_cache_top(cachePtr)){
+			break;
+		} else {
+			return false; 
+		}
         break;    
     }
     case 4:
@@ -779,7 +781,7 @@ void manage_cache_fullness(Cache* cachePtr,type_t item){
 bool show_stack_top(Stack* stackPtr){
 
 	if(stackPtr->head == NULL){
-		fprintf(stderr,"Error trying to inspect the top of the Stack >>> Stack is empty...\n");
+		fprintf(stderr,"Error trying to inspect the top of the Stack\n>>> Stack is empty...\n");
 		return false; 
 	}
 type_t* top = &(stackPtr->head->value);
@@ -819,10 +821,53 @@ switch(stackPtr->head->value.tag){
 	} // END SWITCH // 
 	top = NULL; 
 	return false;  // If here something went wrong // 
-}
 
+}
 bool show_stack_bottom(Stack* stackPtr){}
-bool show_cache_top(Cache* cachePtr){}
+
+bool show_cache_top(Cache* cachePtr){
+	if(cachePtr->top == NULL){
+		fprintf(stderr,"Error trying to inspect the top of the cache\n>>> nothing has been popped yet!...\n");
+		return false; 
+	}
+    type_t* temp = &(cachePtr->top->value);
+	switch(cachePtr->top->value.tag) {
+	case TYPE_CHAR:
+		fprintf(stdout,"\nElemnt on top of the cache is >>> %c\n", 
+			temp->type.char_num);
+		temp = NULL; 
+		return true; 
+	
+	case TYPE_SHORT:
+		fprintf(stdout,"\nElemnt on top of the cache is >>> %d\n",
+			   temp->type.short_num);
+		temp = NULL; 
+		return true; 
+	
+	case TYPE_INT:
+		fprintf(stdout,"\nElemnt on top of the cache is >>> %d\n",
+				temp->type.int_num);
+		temp = NULL; 
+		return true; 
+	
+	case TYPE_DOUBLE:
+		fprintf(stdout,"\nElemnt on top of the cache is >>> %lf\n",
+				temp->type.double_num);
+		temp = NULL; 
+		return true; 		
+	
+		
+	case TYPE_STRING:
+		fprintf(stdout,"\nElement on top of the cache is >>> %s\n",
+				temp->type.string); 
+		temp = NULL; 
+		return true;		
+	}
+
+   temp = NULL;
+   return false; 	
+	
+}
 bool show_cache_bottom(Cache* cachePtr){}
 
 
@@ -855,6 +900,10 @@ void set_cache_bottom(Cache* cachePtr){
  *
  * FIX inside manage_cache_fullness():
  * -Need to protect in a decent way the input handling in this foo
- * */
+ *
+ * 
+ *
+ *
+ * -show_stack_top() IMPLEMENTED  */
 
 
