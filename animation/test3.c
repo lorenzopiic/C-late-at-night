@@ -39,20 +39,22 @@ void display_grid(grid_t grid){
  *      9   . . . . . . . . . .
  *
  *                                                                */
-
 void animate(grid_t grid){
    static int x_copy = 0;
    static int y_copy = 0;
-   
-   x_copy = x_copy % GRID_COLS;
-   //y_copy = y_copy % GRID_ROWS;
 
-    grid[x_copy][y_copy] = ALIVE;
-    x_copy++;
-	if(x_copy == GRID_COLS){
-    	y_copy++;
-	}
-    return;
+   x_copy = x_copy % (GRID_COLS);
+   y_copy = y_copy % (GRID_ROWS);
+
+   grid[x_copy][y_copy] = ALIVE;
+
+        if(x_copy == GRID_COLS-1){
+                y_copy++;
+    }
+
+        x_copy++;
+
+        return;
 }
 
 int main(void) {
