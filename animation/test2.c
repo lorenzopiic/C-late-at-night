@@ -48,12 +48,9 @@ void animate(grid_t grid){
    y_copy = y_copy % (GRID_ROWS);
 
    grid[x_copy][y_copy] = ALIVE;
-
-        if(x_copy == GRID_COLS-1){
-                y_copy++;
-    }
-
-        x_copy++;
+   
+   x_copy++;
+   y_copy++;
 
         return;
 }
