@@ -1,8 +1,8 @@
 #include<stdio.h>
 #include <unistd.h>
 #include<string.h>
-#define GRID_ROWS 5
-#define GRID_COLS 8
+#define GRID_ROWS 8
+#define GRID_COLS 10
 #define GRID_CELLS (GRID_ROWS * GRID_COLS)
 #define ALIVE '*'
 #define DEAD '.'
