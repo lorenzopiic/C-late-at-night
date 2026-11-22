@@ -1,8 +1,8 @@
 #include<stdio.h>
 #include <unistd.h>
 #include<string.h>
-#define GRID_ROWS 5
-#define GRID_COLS 25
+#define GRID_ROWS 20
+#define GRID_COLS 80
 #define GRID_CELLS (GRID_ROWS * GRID_COLS)
 #define ALIVE '*'
 #define DEAD '.'
@@ -127,25 +127,25 @@ int main(void) {
         animate_column_lr(buf); // COLUMN LEFT RIGHT // 
         display_grid(buf);
         init_grid(buf,DEAD);
-        usleep(100000);
+        usleep(1000000);
     }
 		for(short unsigned i=0; i<GRID_ROWS;i++){
         animate_row_ud(buf); // ROW UP DOWN // 
         display_grid(buf);
 		init_grid(buf,DEAD);		
-		usleep(100000);	
+		usleep(1000000);	
 	}
 		for(int i = 0;i<GRID_COLS;i++){
         animate_column_rl(buf); // COLUMN LEFT RIGHT // 
         display_grid(buf);
         init_grid(buf,DEAD);
-        usleep(100000);
+        usleep(1000000);
     }
 		for(short unsigned i=0; i<GRID_ROWS;i++){
         animate_row_du(buf); // ROW UP DOWN // 
         display_grid(buf);
 		init_grid(buf,DEAD);		
-		usleep(100000);	
+		usleep(1000000);	
 	}
 
 /*        for(int i = 0; i<GRID_CELLS;i++){

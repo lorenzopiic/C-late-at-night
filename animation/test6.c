@@ -26,8 +26,8 @@ void display_grid(grid_t grid){
         puts("\n");
 
 #endif
-      printf("\033[H\033[2J\033[3J");
-    for(unsigned y = 0; y<GRID_ROWS;y++){
+    printf("\033[H\033[2J\033[3J");
+	   	for(unsigned y = 0; y<GRID_ROWS;y++){
         for(unsigned x=0; x<GRID_COLS;x++){
             printf("%c", grid[x][y]);
         }
@@ -44,7 +44,7 @@ void animate_column_lr(grid_t grid,int x_reps){
    	grid[x_copy][0] = ALIVE;
     display_grid(grid);
    	init_grid(grid,DEAD);
-      usleep(100000);
+      usleep(1000);
    
    }
         return;
