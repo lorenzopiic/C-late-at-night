@@ -1,8 +1,8 @@
 #include<stdio.h>
 #include <unistd.h>
 #include<string.h>
-#define GRID_ROWS 10
-#define GRID_COLS (GRID_ROWS * 2)
+#define GRID_ROWS 11
+#define GRID_COLS 20
 #define GRID_CELLS (GRID_ROWS * GRID_COLS)
 #define ALIVE '*'
 #define DEAD '.'
@@ -36,46 +36,53 @@ void display_grid(grid_t grid){
 }
 
 void animate_column_lr(grid_t grid,int x_reps,int y_reps){
-
-   for(short unsigned x = 0;x < x_reps;x++){
-    	grid[x][y_reps] = ALIVE;
+	static int x_offset = 0; 
+   	static int times = 0; 
+	for(short unsigned x = 0;x < x_reps;x++){
+    	grid[x+x_offset][y_reps] = ALIVE;
     	display_grid(grid);
     	init_grid(grid,DEAD);
-    	usleep(1000);
+    	usleep(100000);
    }
+	times++;
+	if(times % 2 == 0){
+		x_offset++;	
+	}
+   
         return;
 }
 
 void animate_row_ud(grid_t grid,int x_reps, int y_reps){
-	for(short unsigned y = GRID_ROWS;y > GRID_ROWS-y_reps; y--)
-        grid[x_reps][y] = ALIVE;
+	static int y_offset = 0; 
+	for(short unsigned y = 0; y < y_reps; y++){
+        grid[x_reps][y+y_offset] = ALIVE;
+    	display_grid(grid);
+    	init_grid(grid,DEAD);
+    	usleep(100000);
       }
-
+	y_offset++;
+	return; 
 }
-void animate_column_rl(grid_t grid){
-   static int x_copy = GRID_COLS-1;
-   static int y_copy = GRID_ROWS-1;
 
-   x_copy = x_copy % (GRID_COLS);
-   y_copy = y_copy % (GRID_ROWS);
-
-   grid[x_copy][y_copy] = ALIVE;
-
-      /*  if(x_copy == GRID_COLS-1){
-                y_copy++;
-    }*/
-
-        x_copy--;
-
+void animate_column_rl(grid_t grid,int x_reps, int y_reps){
+	for(short unsigned x = x_reps;x > 0;x--){
+    	grid[x][y_reps] = ALIVE;
+    	display_grid(grid);
+    	init_grid(grid,DEAD);
+    	usleep(100000);
+   }
         return;
 }
 
-void animate_row_du(grid_t grid){
-        static int y_copy = GRID_ROWS-1;
+void animate_row_du(grid_t grid,int x_reps,int y_reps){
+	for(short unsigned y = y_reps; y > 0; y--){
+        grid[x_reps][y] = ALIVE;
+    	display_grid(grid);
+    	init_grid(grid,DEAD);
+    	usleep(100000);
+      }
 
-        grid[0][y_copy] = ALIVE;
-        y_copy--;
-
+	return; 
 }
 /*
  *          0 1 2 3 4 5 6 7 8 9
@@ -98,10 +105,13 @@ int main(void) {
 
     init_grid(buf, DEAD);
     for(short unsigned r = 0;r<GRID_COLS;r++){
-	  animate_column_lr(buf,GRID_COLS-r,r); // COLUMN LEFT RIGHT //
+	  animate_column_lr(buf,GRID_COLS-r,r);	 // COLUMN LEFT RIGHT //
    		
-   	  animate_row_ud(buf,r,GRID_ROWS-r)	  // ROW UP DOWN // 
+   	  animate_row_ud(buf,GRID_COLS-1-r,GRID_ROWS-r);	  // ROW UP DOWN // 
 	
+	  animate_column_rl(buf,GRID_COLS-1-r,GRID_ROWS-1-r);   // 
+
+      animate_row_du(buf,r,GRID_ROWS-1-r);	  
 	}
 
     return 0;

@@ -10,7 +10,7 @@
 //#define DEBUG 
 
 typedef char grid_t[GRID_COLS][GRID_ROWS];
-
+ 
 void init_grid(grid_t grid, char state){
     for(unsigned y = 0; y<GRID_ROWS;y++){
         for(unsigned x=0; x<GRID_COLS;x++){
@@ -21,7 +21,6 @@ void init_grid(grid_t grid, char state){
 
 void display_grid(grid_t grid){
 #ifdef DEBUG
-
 
 	puts("\n");
 
