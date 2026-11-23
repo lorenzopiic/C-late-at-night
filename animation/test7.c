@@ -1,12 +1,12 @@
 #include<stdio.h>
 #include <unistd.h>
 #include<string.h>
-#define GRID_ROWS 11
-#define GRID_COLS 20
+#define GRID_ROWS 15
+#define GRID_COLS 15
 #define GRID_CELLS (GRID_ROWS * GRID_COLS)
 #define ALIVE '*'
 #define DEAD '.'
-
+#define TIME 100000
 //#define DEBUG
 
 typedef char grid_t[GRID_COLS][GRID_ROWS];
@@ -27,22 +27,28 @@ void display_grid(grid_t grid){
 
 #endif
     printf("\033[H\033[2J\033[3J");
-                for(unsigned y = 0; y<GRID_ROWS;y++){
+      for(unsigned y = 0; y<GRID_ROWS;y++){
         for(unsigned x=0; x<GRID_COLS;x++){
-            printf("%c", grid[x][y]);
+            printf("%c ", grid[x][y]);
         }
     printf("\n");
     }
 }
+/*
+ 
+   	"x_reps" is the rep counter
+ 
+ 	"y_p" is the is the current position point of the y
+ */
 
-void animate_column_lr(grid_t grid,int x_reps,int y_reps){
+void animate_column_lr(grid_t grid,int x_reps,int y_p){ 
 	static int x_offset = 0; 
    	static int times = 0; 
-	for(short unsigned x = 0;x < x_reps;x++){
-    	grid[x+x_offset][y_reps] = ALIVE;
+	for(short unsigned x = x_offset;x < x_reps;x++){
+    	grid[x][y_p] = ALIVE;
     	display_grid(grid);
     	init_grid(grid,DEAD);
-    	usleep(100000);
+    	usleep(TIME);
    }
 	times++;
 	if(times % 2 == 0){
@@ -52,35 +58,43 @@ void animate_column_lr(grid_t grid,int x_reps,int y_reps){
         return;
 }
 
-void animate_row_ud(grid_t grid,int x_reps, int y_reps){
+void animate_row_ud(grid_t grid,int x_p, int y_reps){
 	static int y_offset = 0; 
-	for(short unsigned y = 0; y < y_reps; y++){
-        grid[x_reps][y+y_offset] = ALIVE;
+	for(short unsigned y =y_offset; y < y_reps; y++){
+        grid[x_p][y] = ALIVE;
     	display_grid(grid);
     	init_grid(grid,DEAD);
-    	usleep(100000);
+    	usleep(TIME);
       }
 	y_offset++;
 	return; 
 }
 
-void animate_column_rl(grid_t grid,int x_reps, int y_reps){
-	for(short unsigned x = x_reps;x > 0;x--){
-    	grid[x][y_reps] = ALIVE;
+void animate_column_rl(grid_t grid,int x_reps, int y_p){
+	static int x_offset = 0; 
+	static int times = 0; 
+	
+	for(short unsigned x = x_reps;x > x_offset;x--){
+    	grid[x][y_p] = ALIVE;
     	display_grid(grid);
     	init_grid(grid,DEAD);
-    	usleep(100000);
+    	usleep(TIME);
    }
-        return;
+    if(times%2 == 0){
+		x_offset++; 
+	}    
+	return;
 }
 
 void animate_row_du(grid_t grid,int x_reps,int y_reps){
-	for(short unsigned y = y_reps; y > 0; y--){
+	static int y_offset = 0; 
+	for(short unsigned y = y_reps; y >y_offset; y--){
         grid[x_reps][y] = ALIVE;
     	display_grid(grid);
     	init_grid(grid,DEAD);
-    	usleep(100000);
+    	usleep(TIME);
       }
+	y_offset++; 
 
 	return; 
 }
@@ -104,7 +118,7 @@ int main(void) {
     grid_t buf;
 
     init_grid(buf, DEAD);
-    for(short unsigned r = 0;r<GRID_COLS;r++){
+    for(short unsigned r = 0;r<=GRID_ROWS / 2;r++){
 	  animate_column_lr(buf,GRID_COLS-r,r);	 // COLUMN LEFT RIGHT //
    		
    	  animate_row_ud(buf,GRID_COLS-1-r,GRID_ROWS-r);	  // ROW UP DOWN // 
