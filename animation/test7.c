@@ -44,17 +44,16 @@ void display_grid(grid_t grid){
 void animate_column_lr(grid_t grid,int x_reps,int y_p){ 
 	static int x_offset = 0; 
    	static int times = 0; 
-	for(short unsigned x = x_offset;x < x_reps;x++){
-    	grid[x][y_p] = ALIVE;
+	for(short unsigned x = 0; x < x_reps-x_offset;x++){
+    	grid[x+x_offset][y_p] = ALIVE;
     	display_grid(grid);
     	init_grid(grid,DEAD);
     	usleep(TIME);
    }
 	times++;
-	if(times % 2 == 0){
-		x_offset++;	
-	}
-   
+	if(times >= 2) {
+		x_offset++; 
+	}	
         return;
 }
 
@@ -119,13 +118,17 @@ int main(void) {
 
     init_grid(buf, DEAD);
     for(short unsigned r = 0;r<=GRID_ROWS / 2;r++){
-	  animate_column_lr(buf,GRID_COLS-r,r);	 // COLUMN LEFT RIGHT //
+	  animate_column_lr(buf,GRID_COLS-1-r,r);	 // COLUMN LEFT RIGHT //
    		
    	  animate_row_ud(buf,GRID_COLS-1-r,GRID_ROWS-r);	  // ROW UP DOWN // 
 	
 	  animate_column_rl(buf,GRID_COLS-1-r,GRID_ROWS-1-r);   // 
 
       animate_row_du(buf,r,GRID_ROWS-1-r);	  
+	
+#ifdef DEBUG
+	fprintf(stdout,"****************\nr >>> %d \n\n", r); 
+#endif	
 	}
 
     return 0;
