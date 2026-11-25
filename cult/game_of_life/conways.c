@@ -1,23 +1,23 @@
 #include<stdio.h>
 #include<unistd.h>
 #include<stdbool.h>
-#define COLS 15
-#define ROWS 10
-
+#define COLS 5
+#define ROWS 5
 #define DEAD '.'
 #define ALIVE '*'
+typedef char grid_t[COLS][ROWS];
 
 //#define DEBUG
-void print_grid(char grid[][COLS]);
-void set_grid_state(char grid[][COLS], char state);
-char get_cell_state(char grid[][COLS],int x, int y);
-void set_cell_state(char grid[][COLS],int x,int y,char state); 
-void module(int*x, int* y);
+void print_grid(grid_t grid);
+void set_grid_state(grid_t grid, char state);
+char get_cell_state(grid_t grid,int x, int y);
+void set_cell_state(grid_t grid ,int x,int y,char state); 
+void module(int *x, int *y);
 void clear(void);
 
 int main(void){
 
-	char grid[ROWS][COLS]; 
+	grid_t grid;  
 	
 	clear(); 
 	set_grid_state(grid,DEAD);
@@ -41,7 +41,7 @@ int main(void){
 
 /* prints the grid */
 
-void print_grid(char grid[][COLS]){
+void print_grid(grid_t grid){
 	
 	printf("   "); 
 	
@@ -51,7 +51,7 @@ void print_grid(char grid[][COLS]){
 	
 	printf("\n\n"); 
 	
-	for(int x = 0; x<ROWS;x++){
+	for(int x = 0; x < ROWS;x++){
 			printf("%d  ",x); 
 	
 	for(int y = 0; y<COLS; y++){
@@ -66,7 +66,7 @@ void print_grid(char grid[][COLS]){
 	printf("\n"); 
 }
 
-char get_cell_state(char grid[][COLS],int x,int y){
+char get_cell_state(grid_t grid,int x,int y){
 	return grid[x][y];
 }
 void set_grid_state(char grid[][COLS], char state){
@@ -75,7 +75,7 @@ void set_grid_state(char grid[][COLS], char state){
             set_cell_state(grid, x, y, state);
 }
 
-void set_cell_state(char grid [][COLS],int x, int y,char state){
+void set_cell_state(grid_t grid,int x, int y,char state){
 	module(&x,&y);
 	grid[x][y] = state;
 }
